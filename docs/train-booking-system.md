@@ -4,6 +4,8 @@
 
 The train module is separate from event ticketing. It provides public station-to-station search, authenticated seat booking, passenger details, booking history, cancellation, and a waitlist that can be promoted when cancellation releases inventory.
 
+The homepage (`/`), legacy alias (`/index.html`), and search (`/trains`) all follow the Home policy in Admin > Front End > Page Access. Passengers with `train_access_enabled` can retain their session on all three pages without legacy event approval; a page-policy denial redirects to login without revoking that session. Newsletter submissions return to the homepage, which displays the escaped `newsletter_message` confirmation.
+
 Routes:
 
 - `GET /trains` — search by origin, destination, and travel date.

@@ -43,6 +43,12 @@
         </section>
 
         <div class="train-container train-content">
+            @if(session('newsletter_message'))
+                <div class="train-alert train-alert-success" role="status">
+                    <p>{{ session('newsletter_message') }}</p>
+                </div>
+            @endif
+
             @if(session('message'))
                 <div class="train-alert train-alert-success" role="status">
                     <span class="train-alert-icon" aria-hidden="true">✓</span>

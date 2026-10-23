@@ -47,7 +47,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 // The train search is the public landing page.
-Route::get('/', [FrontendTrainController::class, 'index'])->name('frontend.trains.home');
+Route::get('/', [FrontendTrainController::class, 'index'])->name('frontend.trains.home')->middleware('page.access');
 Route::get('/index.html', [FrontendTrainController::class, 'index'])->name('frontend.trains.legacy-home')->middleware('page.access');
 Route::post('/newsletter-subscribe', [FrontendNewsletterController::class, 'store'])->name('frontend.newsletter.store')->middleware('page.access');
 Route::get('/pages/{slug}', [FrontendPageController::class, 'show'])->name('frontend.page.show')->middleware('page.access');
@@ -60,7 +60,7 @@ Route::get('/add-my-contact', [FrontendMyContactController::class, 'create'])->n
 Route::get('/add-my-contact/check-email', [FrontendMyContactController::class, 'checkOfficialEmail'])->name('frontend.my-contacts.check-email')->middleware('page.access');
 Route::post('/add-my-contact', [FrontendMyContactController::class, 'store'])->name('frontend.my-contacts.store')->middleware('page.access');
 Route::get('/download', [FrontendDownloadController::class, 'index'])->name('frontend.download.index')->middleware('page.access');
-Route::get('/trains', [FrontendTrainController::class, 'index'])->name('frontend.trains.search');
+Route::get('/trains', [FrontendTrainController::class, 'index'])->name('frontend.trains.search')->middleware('page.access');
 Route::get('/trains/sign-in', [TrainAuthController::class, 'showLogin'])->name('frontend.trains.login');
 Route::get('/trains/register', [TrainAuthController::class, 'showRegister'])->name('frontend.trains.register');
 // Intentionally unadvertised owner entry point; authorization is enforced on every protected route.
