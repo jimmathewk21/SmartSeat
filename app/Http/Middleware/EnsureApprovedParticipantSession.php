@@ -10,6 +10,8 @@ class EnsureApprovedParticipantSession
     private const REVOKED_ACCESS_MESSAGE = 'Your access is no longer active. Please contact support for assistance.';
 
     private const TRAIN_ROUTES = [
+        'frontend.trains.home',
+        'frontend.trains.legacy-home',
         'frontend.trains.search',
         'frontend.trains.login',
         'frontend.trains.register',

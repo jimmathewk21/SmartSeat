@@ -9,34 +9,6 @@ const {
 
 test.setTimeout(60_000);
 
-test('admin can create, update, and delete a sponsor category', async ({ page }) => {
-    const name = uniqueId('Playwright Sponsor Category');
-    const updatedName = `${name} Updated`;
-
-    await page.goto('/admin/sponsor-categories/create');
-    await page.locator('#name').fill(name);
-    await page.locator('#sort_order').fill('42');
-    await page.locator('#logo_size').selectOption('lg');
-    await page.locator('#is_active').selectOption('1');
-    await page.getByRole('button', { name: /save/i }).click();
-
-    await expect(page).toHaveURL(/\/admin\/sponsor-categories$/);
-    await searchTable(page, name);
-    let row = await expectRow(page, name);
-
-    await row.getByLabel('Edit').click();
-    await page.locator('#name').fill(updatedName);
-    await page.locator('#sort_order').fill('43');
-    await page.getByRole('button', { name: /save/i }).click();
-
-    await searchTable(page, updatedName);
-    row = await expectRow(page, updatedName);
-
-    await acceptNextDialog(page);
-    await row.getByLabel('Delete').click();
-    await expectRowMissing(page, updatedName);
-});
-
 test('admin can create, update, and delete FAQ content with a UI-created category', async ({ page }) => {
     const categoryName = uniqueId('Playwright FAQ Category');
     const question = uniqueId('How does Playwright FAQ CRUD work');

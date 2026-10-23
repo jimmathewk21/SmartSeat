@@ -151,6 +151,6 @@ class LoginController extends Controller
             return route('admin.home');
         }
 
-        return route('frontend.home');
+        return route('frontend.trains.home');
     }
 }

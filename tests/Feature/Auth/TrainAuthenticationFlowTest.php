@@ -193,8 +193,6 @@ class TrainAuthenticationFlowTest extends TestCase
             ->assertRedirect(route('frontend.trains.search'))
             ->assertSessionHasErrors('inventory_ids');
 
-        $this->get(route('my-tickets.index'))->assertRedirect(route('login'));
-        $this->assertGuest();
     }
 
     public function test_event_registration_form_clears_train_origin_and_pending_event_users_remain_blocked(): void
@@ -214,7 +212,7 @@ class TrainAuthenticationFlowTest extends TestCase
             'train_access_enabled' => false,
         ]);
 
-        $this->actingAs($user)->get(route('my-tickets.index'))->assertRedirect(route('login'));
+        $this->actingAs($user)->get(route('frontend.trains.bookings'))->assertRedirect(route('login'));
         $this->assertGuest();
 
         $this->get(route('login'))->assertOk();

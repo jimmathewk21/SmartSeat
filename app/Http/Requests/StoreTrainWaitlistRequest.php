@@ -14,6 +14,8 @@ class StoreTrainWaitlistRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'boarding_station_id' => ['required', 'integer', 'different:destination_station_id', 'exists:stations,id'],
+            'destination_station_id' => ['required', 'integer', 'different:boarding_station_id', 'exists:stations,id'],
             'passengers' => ['required', 'array', 'min:1', 'max:6'],
             'passengers.*.name' => ['required', 'string', 'max:255'],
             'passengers.*.age' => ['nullable', 'integer', 'between:0,120'],

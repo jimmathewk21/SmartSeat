@@ -41,7 +41,7 @@ class FrontendMaintenanceModeTest extends TestCase
             'enabled' => true,
         ]);
 
-        $this->get(route('frontend.home'))
+        $this->get(route('frontend.faqs.index'))
             ->assertStatus(503)
             ->assertSee('Website Maintenance');
     }

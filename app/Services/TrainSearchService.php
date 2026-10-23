@@ -69,7 +69,7 @@ class TrainSearchService
 
                 return $trip;
             })
-            ->filter(fn (TrainTrip $trip) => $trip->search_departure_at->isSameDay($departureDate))
+            ->filter(fn (TrainTrip $trip) => $trip->search_departure_at->isSameDay($departureDate) && $trip->search_departure_at->isFuture())
             ->sortBy('search_departure_at')
             ->take(50)
             ->values();

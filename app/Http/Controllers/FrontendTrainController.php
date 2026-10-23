@@ -47,6 +47,8 @@ class FrontendTrainController extends Controller
                 ->where('booking_code', $confirmationCode)
                 ->with([
                     'trip.train.routeStops.station',
+                    'boardingStation',
+                    'destinationStation',
                     'passengers',
                     'seatAssignments.passenger',
                     'seatAssignments.inventory.seat.coach',
@@ -58,13 +60,15 @@ class FrontendTrainController extends Controller
             ->with([
                 'trip.train',
                 'trip.train.routeStops.station',
+                'boardingStation',
+                'destinationStation',
                 'passengers',
                 'seatAssignments.inventory.seat.coach',
             ])
             ->orderByDesc('created_at')
             ->paginate(15);
         $waitlistEntries = $request->user()->trainWaitlistEntries()
-            ->with(['trip.train', 'passengers', 'promotedBooking'])
+            ->with(['trip.train', 'passengers', 'promotedBooking', 'boardingStation', 'destinationStation'])
             ->orderByDesc('created_at')
             ->paginate(15, ['*'], 'waitlist_page');
 

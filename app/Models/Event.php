@@ -116,41 +116,4 @@ class Event extends Model
             && $this->start_at->greaterThan($reference);
     }
 
-    public function speakers()
-    {
-        return $this->hasMany(Speaker::class, 'event_id')->orderBy('sort_order')->orderBy('name');
-    }
-
-    public function ticketPlans()
-    {
-        return $this->hasMany(EventTicketPlan::class, 'event_id')
-            ->orderBy('sort_order')
-            ->orderBy('id');
-    }
-
-    public function bookings()
-    {
-        return $this->hasMany(EventBooking::class, 'event_id');
-    }
-
-    public function agendaDays()
-    {
-        return $this->hasMany(AgendaDay::class, 'event_id')
-            ->orderBy('sort_order')
-            ->orderBy('id');
-    }
-
-    public function agendaRooms()
-    {
-        return $this->hasMany(AgendaRoom::class, 'event_id')
-            ->orderBy('sort_order')
-            ->orderBy('id');
-    }
-
-    public function agendaItems()
-    {
-        return $this->hasMany(AgendaItem::class, 'event_id')
-            ->orderBy('sort_order')
-            ->orderBy('id');
-    }
 }

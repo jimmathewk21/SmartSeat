@@ -15,17 +15,9 @@ class DatabaseSeeder extends Seeder
             UsersTableSeeder::class,
             RoleUserTableSeeder::class,
             CountriesTableSeeder::class,
-            EventDemoSeeder::class,
-            TicketDemoSeeder::class,
-            SponsorDemoSeeder::class,
-            TestimonialsDemoSeeder::class,
             FaqDemoSeeder::class,
-            AgendaDemoSeeder::class,
-            DownloadDemoSeeder::class,
-            WorldEventsDemoSeeder::class,
+            TestimonialsDemoSeeder::class,
             MyContactsDemoSeeder::class,
-            AttractionsDemoSeeder::class,
-            HotelBookingDemoSeeder::class,
         ]);
     }
 }

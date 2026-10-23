@@ -101,7 +101,7 @@ php artisan migrate
 php artisan db:seed
 ```
 
-The seeders populate sample content for events, ticket plans, sponsors, FAQs, testimonials, agenda, downloads, world events, contacts, and hotel bookings so the local site and admin panel are usable right away.
+The default seed run loads shared roles, permissions, users, and countries, plus train-booking FAQs, passenger testimonials, and sample contacts. Legacy event demo seeders are no longer included. `DownloadDemoSeeder` is retained for reference but is not called by `DatabaseSeeder` because its current sample files and copy are event-specific.
 
 For a local database that needs an administrator without loading event demo data, see [Local administrator bootstrap](docs/local-admin-bootstrap.md). Its explicit command is guarded to `APP_ENV=local` and the connected `smartseat_dev` database; do not use the general `db:seed` command solely to create an administrator.
 

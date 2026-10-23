@@ -21,8 +21,11 @@
             @php
                 $confirmationTrip = $confirmedBooking->trip;
                 $confirmationStops = $confirmationTrip->train->routeStops;
-                $confirmationOrigin = $confirmationStops->first()?->station?->name;
-                $confirmationDestination = $confirmationStops->last()?->station?->name;
+                $confirmationHasJourney = $confirmedBooking->boarding_station_id && $confirmedBooking->destination_station_id;
+                $confirmationOrigin = $confirmationHasJourney ? $confirmedBooking->boardingStation?->name : $confirmationStops->first()?->station?->name;
+                $confirmationDestination = $confirmationHasJourney ? $confirmedBooking->destinationStation?->name : $confirmationStops->last()?->station?->name;
+                $confirmationDeparture = $confirmedBooking->boarding_at ?? $confirmationTrip->starts_at;
+                $confirmationArrival = $confirmedBooking->arrival_at ?? $confirmationTrip->ends_at;
             @endphp
             <section class="train-booking-confirmation" aria-labelledby="train-booking-confirmation-title" role="status">
                 <div class="train-confirmation-heading">
@@ -36,11 +39,11 @@
                 <div class="train-confirmation-journey">
                     <div>
                         <strong>{{ $confirmationTrip->train->name }} ({{ $confirmationTrip->train->code }})</strong>
-                        <p>Scheduled service: {{ $confirmationOrigin ?? 'Route details unavailable' }} <span aria-hidden="true">→</span> {{ $confirmationDestination ?? 'Route details unavailable' }}</p>
+                        <p>{{ $confirmationHasJourney ? 'Your journey' : 'Legacy full-trip schedule (selected stations unavailable)' }}: {{ $confirmationOrigin ?? 'Route details unavailable' }} <span aria-hidden="true">→</span> {{ $confirmationDestination ?? 'Route details unavailable' }}</p>
                     </div>
                     <div class="train-confirmation-times">
-                        <span>Departs <strong>{{ $confirmationTrip->starts_at->format('D, j M Y · g:i A') }}</strong></span>
-                        <span>Arrives <strong>{{ $confirmationTrip->ends_at->format('D, j M Y · g:i A') }}</strong></span>
+                        <span>Departs <strong>{{ $confirmationDeparture->format('D, j M Y · g:i A') }}</strong></span>
+                        <span>Arrives <strong>{{ $confirmationArrival->format('D, j M Y · g:i A') }}</strong></span>
                     </div>
                 </div>
                 <div class="train-confirmation-details">
@@ -73,7 +76,12 @@
                     <div>
                         <h2 class="h5">{{ $booking->trip->train->name }} ({{ $booking->trip->train->code }})</h2>
                         <div>Booking code: <strong>{{ $booking->booking_code }}</strong></div>
-                        <div>Travel: {{ $booking->trip->starts_at->format('d-M-Y h:i A') }} – {{ $booking->trip->ends_at->format('d-M-Y h:i A') }}</div>
+                        @if($booking->boarding_station_id && $booking->destination_station_id)
+                            <div>Journey: {{ $booking->boardingStation?->name ?? 'Station unavailable' }} → {{ $booking->destinationStation?->name ?? 'Station unavailable' }}</div>
+                            <div>Travel: {{ ($booking->boarding_at ?? $booking->trip->starts_at)->format('d-M-Y h:i A') }} – {{ ($booking->arrival_at ?? $booking->trip->ends_at)->format('d-M-Y h:i A') }}</div>
+                        @else
+                            <div>Legacy full-trip schedule (selected stations unavailable): {{ $booking->trip->starts_at->format('d-M-Y h:i A') }} – {{ $booking->trip->ends_at->format('d-M-Y h:i A') }}</div>
+                        @endif
                         <div>Status: <span class="train-record-status {{ $booking->status === \App\Models\TrainBooking::STATUS_CONFIRMED ? 'is-confirmed' : 'is-cancelled' }}">{{ ucfirst($booking->status) }}</span></div>
                         <div>Passengers: {{ $booking->passengers->pluck('name')->join(', ') }}</div>
                     </div>
@@ -83,7 +91,7 @@
                         @endforeach
                     </div>
                 </div>
-                @if($booking->status === \App\Models\TrainBooking::STATUS_CONFIRMED && $booking->trip->starts_at->isFuture())
+                @if($booking->status === \App\Models\TrainBooking::STATUS_CONFIRMED && ($booking->boarding_at ?? $booking->trip->starts_at)->isFuture())
                     <form class="mt-3" method="POST" action="{{ route('frontend.trains.cancel', $booking) }}" onsubmit="return confirm('Cancel this train booking?');">
                         @csrf
                         <button class="btn btn-outline-danger" type="submit">Cancel booking</button>
@@ -99,6 +107,12 @@
         @forelse($waitlistEntries as $entry)
             <article class="booking-card">
                 <div><strong>{{ $entry->trip->train->name }} ({{ $entry->trip->train->code }})</strong></div>
+                @if($entry->boarding_station_id && $entry->destination_station_id)
+                    <div>Journey: {{ $entry->boardingStation?->name ?? 'Station unavailable' }} → {{ $entry->destinationStation?->name ?? 'Station unavailable' }}</div>
+                    <div>Travel: {{ ($entry->boarding_at ?? $entry->trip->starts_at)->format('d-M-Y h:i A') }} – {{ ($entry->arrival_at ?? $entry->trip->ends_at)->format('d-M-Y h:i A') }}</div>
+                @else
+                    <div>Legacy full-trip waitlist request (selected stations unavailable).</div>
+                @endif
                 <div>Passengers: {{ $entry->passengers->pluck('name')->join(', ') }}</div>
                 <div>Status: <span class="train-record-status {{ $entry->status === \App\Models\TrainWaitlistEntry::STATUS_WAITING ? 'is-waiting' : ($entry->status === \App\Models\TrainWaitlistEntry::STATUS_PROMOTED ? 'is-promoted' : 'is-cancelled') }}">{{ ucfirst($entry->status) }}</span></div>
                 @if($entry->status === \App\Models\TrainWaitlistEntry::STATUS_WAITING)

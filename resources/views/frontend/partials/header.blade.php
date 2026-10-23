@@ -3,20 +3,6 @@
     $isAbsoluteLogo = str_starts_with($logo, 'http://') || str_starts_with($logo, 'https://') || str_starts_with($logo, '//') || str_starts_with($logo, '/');
     $logoSrc = $isAbsoluteLogo ? $logo : asset($logo);
     $menuItems = collect($frontendHeader['menu_items'] ?? []);
-    $venuePath = '/venue';
-    $hasVenueItem = $menuItems->contains(function ($item) use ($venuePath) {
-        $link = trim((string) ($item['link'] ?? ''));
-
-        return $link === $venuePath || $link === route('frontend.venue.index');
-    });
-
-    if (! $hasVenueItem) {
-        $menuItems->push([
-            'name' => 'Venue',
-            'link' => $venuePath,
-        ]);
-    }
-
     $hasTrainItem = $menuItems->contains(function ($item) {
         $link = trim((string) ($item['link'] ?? ''));
 
@@ -41,7 +27,7 @@
     $buttonText = $frontendHeader['button_text'] ?? 'Buy Tickets';
     $buttonLink = $frontendHeader['button_link'] ?? '#section-tickets';
     $currentPath = request()->path();
-    $isHomeRoute = request()->routeIs('frontend.home') || $currentPath === '/' || $currentPath === 'index.html';
+    $isHomeRoute = request()->routeIs('frontend.trains.home') || $currentPath === '/' || $currentPath === 'index.html';
     $headerInlineStyle = $isHomeRoute ? '' : 'background:#000 !important;';
 @endphp
 
@@ -358,7 +344,7 @@
                 <div class="de-flex">
                     <div class="de-flex-col">
                         <div id="logo">
-                            <a href="{{ route('frontend.home') }}">
+                            <a href="{{ route('frontend.trains.home') }}">
                                 <img class="logo-main" src="{{ $logoSrc }}" alt="">
                                 <img class="logo-scroll" src="{{ $logoSrc }}" alt="">
                                 <img class="logo-mobile" src="{{ $logoSrc }}" alt="">
@@ -371,7 +357,7 @@
                             <ul id="mainmenu">
                                 @foreach($menuItems as $item)
                                     <li>
-                                        @php($menuLink = trim((string) ($item['link'] ?? '')) === '/' ? route('frontend.home') : $item['link'])
+                                        @php($menuLink = trim((string) ($item['link'] ?? '')) === '/' ? route('frontend.trains.home') : $item['link'])
                                         <a class="menu-item" href="{{ $menuLink }}">{{ $item['name'] }}</a>
                                     </li>
                                 @endforeach
