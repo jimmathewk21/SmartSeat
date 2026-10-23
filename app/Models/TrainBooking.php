@@ -11,9 +11,19 @@ class TrainBooking extends Model
     public const STATUS_CONFIRMED = 'confirmed';
     public const STATUS_CANCELLED = 'cancelled';
 
-    protected $fillable = ['booking_code', 'user_id', 'train_trip_id', 'status', 'seat_count', 'confirmed_at', 'cancelled_at'];
+    protected $fillable = ['booking_code', 'user_id', 'train_trip_id', 'boarding_station_id', 'destination_station_id', 'boarding_at', 'arrival_at', 'status', 'seat_count', 'confirmed_at', 'cancelled_at'];
 
-    protected $casts = ['confirmed_at' => 'datetime', 'cancelled_at' => 'datetime'];
+    protected $casts = ['boarding_at' => 'datetime', 'arrival_at' => 'datetime', 'confirmed_at' => 'datetime', 'cancelled_at' => 'datetime'];
+
+    public function boardingStation()
+    {
+        return $this->belongsTo(Station::class, 'boarding_station_id');
+    }
+
+    public function destinationStation()
+    {
+        return $this->belongsTo(Station::class, 'destination_station_id');
+    }
 
     public function user()
     {

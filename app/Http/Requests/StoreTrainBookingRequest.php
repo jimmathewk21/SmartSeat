@@ -14,6 +14,8 @@ class StoreTrainBookingRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'boarding_station_id' => ['required', 'integer', 'different:destination_station_id', 'exists:stations,id'],
+            'destination_station_id' => ['required', 'integer', 'different:boarding_station_id', 'exists:stations,id'],
             'inventory_ids' => ['required', 'array', 'min:1', 'max:6'],
             'inventory_ids.*' => ['required', 'integer', 'distinct', 'exists:trip_seat_inventories,id'],
             'passengers' => ['required', 'array', 'min:1', 'max:6'],

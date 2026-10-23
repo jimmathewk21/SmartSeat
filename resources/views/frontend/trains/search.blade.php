@@ -237,6 +237,8 @@
                                                     <div class="journey-form-panel">
                                                         <form method="POST" action="{{ route('frontend.trains.book', $trip) }}" class="train-passenger-form" data-passenger-form>
                                                             @csrf
+                                                            <input type="hidden" name="boarding_station_id" value="{{ $trip->origin_station?->id }}">
+                                                            <input type="hidden" name="destination_station_id" value="{{ $trip->destination_station?->id }}">
                                                             <h4>Available seats</h4>
                                                             <p class="journey-form-hint">Select one seat for each passenger. Submitting confirms the booking immediately if the seats remain available.</p>
                                                             <div class="train-seat-grid">
@@ -295,6 +297,8 @@
                                                     <p class="journey-form-hint">Waiting requests are considered by request time, then entry number. Eligible seats may be offered if a booking is cancelled.</p>
                                                     <form method="POST" action="{{ route('frontend.trains.waitlist', $trip) }}" class="train-passenger-form" data-passenger-form>
                                                         @csrf
+                                                        <input type="hidden" name="boarding_station_id" value="{{ $trip->origin_station?->id }}">
+                                                        <input type="hidden" name="destination_station_id" value="{{ $trip->destination_station?->id }}">
                                                         <input type="hidden" name="from_station_id" value="{{ request('from_station_id') }}">
                                                         <input type="hidden" name="to_station_id" value="{{ request('to_station_id') }}">
                                                         <input type="hidden" name="date" value="{{ request('date') }}">

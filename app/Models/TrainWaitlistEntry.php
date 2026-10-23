@@ -12,9 +12,19 @@ class TrainWaitlistEntry extends Model
     public const STATUS_PROMOTED = 'promoted';
     public const STATUS_CANCELLED = 'cancelled';
 
-    protected $fillable = ['user_id', 'train_trip_id', 'seat_count', 'requires_accessible_seat', 'status', 'promoted_booking_id', 'promoted_at'];
+    protected $fillable = ['user_id', 'train_trip_id', 'boarding_station_id', 'destination_station_id', 'boarding_at', 'arrival_at', 'seat_count', 'requires_accessible_seat', 'status', 'promoted_booking_id', 'promoted_at'];
 
-    protected $casts = ['requires_accessible_seat' => 'boolean', 'promoted_at' => 'datetime'];
+    protected $casts = ['boarding_at' => 'datetime', 'arrival_at' => 'datetime', 'requires_accessible_seat' => 'boolean', 'promoted_at' => 'datetime'];
+
+    public function boardingStation()
+    {
+        return $this->belongsTo(Station::class, 'boarding_station_id');
+    }
+
+    public function destinationStation()
+    {
+        return $this->belongsTo(Station::class, 'destination_station_id');
+    }
 
     public function user()
     {

@@ -34,9 +34,9 @@ Both train demo seeders are explicit commands and check the effective connection
 
 The first public frontend milestone is served by the existing `GET /trains` route (`frontend.trains.search`) and `FrontendTrainController::index()`. The controller renders `resources/views/frontend/trains/search.blade.php`; searches and results share the same page. The view uses the existing frontend header and footer, with train-only responsive styling in `public/css/train-search.css` and small vanilla JavaScript interactions in `public/js/train-search.js`.
 
-The search form submits the existing `from_station_id`, `to_station_id`, and `date` query parameters. It presents server validation errors, an empty-results state, and journey cards from `TrainSearchService`. Signed-in users can expand the existing booking or waitlist forms; those submit to the existing authenticated routes and do not bypass service validation. The passenger controls support up to six passengers, and the booking form checks that the number of selected seats matches the passenger count before submission. The waitlist form carries the search parameters so the existing controller can return the user to the same results. No additional packages or backend endpoints are required.
+The search form submits the existing `from_station_id`, `to_station_id`, and `date` query parameters. It presents server validation errors, an empty-results state, and journey cards from `TrainSearchService`; journeys whose selected boarding station has departed are omitted. Signed-in users can expand the existing booking or waitlist forms; those submit the selected boarding and destination station IDs to the existing authenticated routes. The service rechecks active, ordered stops and boarding time inside its transaction. The passenger controls support up to six passengers, and the booking form checks that the number of selected seats matches the passenger count before submission. The waitlist form carries the search parameters so the existing controller can return the user to the same results. No additional packages or backend endpoints are required.
 
-Available inventory rows are the seat-selection source: each checkbox submits its actual `trip_seat_inventories.id`, while the booking service locks and revalidates those rows before confirming. A successful booking redirects to the existing authenticated history page, where a session-scoped confirmation panel displays the real booking code, confirmed status, scheduled service route/times, passengers, and assignments. Booking history remains the owner-scoped source for cancellation. A successful waitlist request returns to search with its entry ID and `waiting` status; the history page distinguishes waiting, promoted, and cancelled entries, and shows the promoted booking reference when one exists. A pending waitlist entry is not represented as a confirmed booking.
+Available inventory rows are the seat-selection source: each checkbox submits its actual `trip_seat_inventories.id`, while the booking service locks and revalidates those rows before confirming. One seat remains allocated for the entire trip even when the passenger boards later. A successful booking redirects to the existing authenticated history page, where a session-scoped confirmation panel displays the real booking code, confirmed status, selected journey and scheduled time snapshots, passengers, and assignments. Booking history remains the owner-scoped source for cancellation. A successful waitlist request returns to search with its entry ID and `waiting` status; the history page distinguishes waiting, promoted, and cancelled entries, and shows the promoted booking reference when one exists. A pending waitlist entry is not represented as a confirmed booking. Legacy rows without journey endpoints retain their original full-trip cutoff and are labeled as full-trip schedule information in history.
 
 ## Data model
 
@@ -46,6 +46,7 @@ Available inventory rows are the seat-selection source: each checkbox submits it
 - `trip_seat_inventories` has one row per trip and physical seat. Its status and `current_booking_id` represent the authoritative current allocation.
 - `train_bookings`, `train_booking_passengers`, and `train_booking_seats` record confirmed/cancelled bookings and assignment history.
 - `train_waitlist_entries` and `train_waitlist_passengers` store waiting requests separately from bookings.
+- New bookings and waitlist entries store nullable boarding/destination station references and scheduled boarding/arrival snapshots. Null values preserve existing historical rows; promotion carries the waitlist journey into the booking.
 
 ## Inventory safety
 
@@ -67,6 +68,9 @@ The additive migrations are:
 4. `2026_10_22_000004_harden_train_inventory_constraints`
 5. `2026_10_23_000001_add_train_access_enabled_to_participants`
 6. `2026_10_23_000002_add_train_owner_authorization`
+7. `2026_10_24_000001_add_journey_to_train_bookings_and_waitlist`
+
+Migration 000001 on 24 October adds only nullable journey columns and station foreign keys to bookings and waitlist entries. Apply it to the isolated test database before running booking tests; do not backfill old journeys from the train's full route. New booking and waitlist requests require selected endpoints after this migration.
 
 The owner-authorization migration adds the separate owner approval timestamp, nullable train-to-owner assignment, Train Owner role, and owner-only permissions. Existing trains remain unassigned until an administrator assigns them in the Admin user editor. Do not assign the Train Owner role or owner approval to passenger accounts as part of normal passenger registration.
 

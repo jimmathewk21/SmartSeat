@@ -19,7 +19,9 @@ class TrainBookingController extends Controller
             $request->user(),
             $trip->id,
             $request->validated('inventory_ids'),
-            $request->validated('passengers')
+            $request->validated('passengers'),
+            (int) $request->validated('boarding_station_id'),
+            (int) $request->validated('destination_station_id')
         );
 
         return redirect()->route('frontend.trains.bookings')
@@ -29,7 +31,13 @@ class TrainBookingController extends Controller
 
     public function joinWaitlist(TrainTrip $trip, StoreTrainWaitlistRequest $request, TrainBookingService $service): RedirectResponse
     {
-        $entry = $service->joinWaitlist($request->user(), $trip->id, $request->validated('passengers'));
+        $entry = $service->joinWaitlist(
+            $request->user(),
+            $trip->id,
+            $request->validated('passengers'),
+            (int) $request->validated('boarding_station_id'),
+            (int) $request->validated('destination_station_id')
+        );
 
         return redirect()->route('frontend.trains.search', $request->only(['from_station_id', 'to_station_id', 'date']))
             ->with('message', 'Your request is on the waitlist. No seat has been confirmed yet.')

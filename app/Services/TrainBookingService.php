@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\TrainBooking;
 use App\Models\TrainBookingPassenger;
 use App\Models\TrainBookingSeat;
+use App\Models\TrainRouteStop;
 use App\Models\TrainTrip;
 use App\Models\TrainWaitlistEntry;
 use App\Models\TrainWaitlistPassenger;
@@ -18,13 +19,14 @@ use Illuminate\Validation\ValidationException;
 
 class TrainBookingService
 {
-    public function book(User $user, int $tripId, array $inventoryIds, array $passengers): TrainBooking
+    public function book(User $user, int $tripId, array $inventoryIds, array $passengers, int $boardingStationId, int $destinationStationId): TrainBooking
     {
         $this->validatePassengers($passengers);
 
-        return DB::transaction(function () use ($user, $tripId, $inventoryIds, $passengers) {
+        return DB::transaction(function () use ($user, $tripId, $inventoryIds, $passengers, $boardingStationId, $destinationStationId) {
             $trip = TrainTrip::query()->lockForUpdate()->findOrFail($tripId);
-            $this->ensureTripBookable($trip);
+            $journey = $this->resolveJourney($trip, $boardingStationId, $destinationStationId);
+            $this->ensureTripBookable($trip, $journey['boarding_at']);
             $inventoryIds = array_values(array_unique(array_map('intval', $inventoryIds)));
 
             if (count($inventoryIds) !== count($passengers) || count($inventoryIds) === 0) {
@@ -36,17 +38,18 @@ class TrainBookingService
                 throw ValidationException::withMessages(['seats' => 'One or more selected seats are no longer available. Refresh the search and try again.']);
             }
 
-            return $this->createConfirmedBooking($user, $trip, $inventories, $passengers);
+            return $this->createConfirmedBooking($user, $trip, $inventories, $passengers, $journey);
         }, 3);
     }
 
-    public function joinWaitlist(User $user, int $tripId, array $passengers): TrainWaitlistEntry
+    public function joinWaitlist(User $user, int $tripId, array $passengers, int $boardingStationId, int $destinationStationId): TrainWaitlistEntry
     {
         $this->validatePassengers($passengers);
 
-        return DB::transaction(function () use ($user, $tripId, $passengers) {
+        return DB::transaction(function () use ($user, $tripId, $passengers, $boardingStationId, $destinationStationId) {
             $trip = TrainTrip::query()->lockForUpdate()->findOrFail($tripId);
-            $this->ensureTripBookable($trip);
+            $journey = $this->resolveJourney($trip, $boardingStationId, $destinationStationId);
+            $this->ensureTripBookable($trip, $journey['boarding_at']);
 
             $availableInventories = TripSeatInventory::query()
                 ->where('train_trip_id', $tripId)
@@ -60,6 +63,7 @@ class TrainBookingService
             $entry = TrainWaitlistEntry::create([
                 'user_id' => $user->id,
                 'train_trip_id' => $tripId,
+                ...$journey,
                 'seat_count' => count($passengers),
                 'requires_accessible_seat' => collect($passengers)->contains(fn ($passenger) => (bool) ($passenger['requires_accessible_seat'] ?? false)),
                 'status' => TrainWaitlistEntry::STATUS_WAITING,
@@ -92,7 +96,7 @@ class TrainBookingService
             }
 
             $trip = TrainTrip::query()->lockForUpdate()->findOrFail($booking->train_trip_id);
-            if ($trip->starts_at->isPast()) {
+            if (($booking->boarding_at ?? $trip->starts_at)->isPast()) {
                 throw ValidationException::withMessages(['booking' => 'A train booking cannot be cancelled after departure.']);
             }
 
@@ -166,11 +170,17 @@ class TrainBookingService
                 continue;
             }
 
+            if (($entry->boarding_at ?? $entry->trip->starts_at)->isPast()) {
+                $skippedEntryIds[] = $entry->id;
+                continue;
+            }
+
             $booking = $this->createConfirmedBooking(
                 $entry->user,
                 $entry->trip,
                 $this->selectAssignable($inventories, $entry->passengers->toArray()),
-                $entry->passengers->map(fn ($passenger) => $passenger->only(['name', 'age', 'gender', 'requires_accessible_seat']))->all()
+                $entry->passengers->map(fn ($passenger) => $passenger->only(['name', 'age', 'gender', 'requires_accessible_seat']))->all(),
+                $entry->only(['boarding_station_id', 'destination_station_id', 'boarding_at', 'arrival_at'])
             );
 
             $entry->forceFill([
@@ -183,7 +193,7 @@ class TrainBookingService
         }
     }
 
-    private function createConfirmedBooking(User $user, TrainTrip $trip, Collection $inventories, array $passengers): TrainBooking
+    private function createConfirmedBooking(User $user, TrainTrip $trip, Collection $inventories, array $passengers, array $journey): TrainBooking
     {
         if (! $this->canAssign($inventories, $passengers)) {
             throw ValidationException::withMessages(['seats' => 'The selected seats do not meet passenger accessibility requirements.']);
@@ -193,6 +203,7 @@ class TrainBookingService
             'booking_code' => $this->bookingCode(),
             'user_id' => $user->id,
             'train_trip_id' => $trip->id,
+            ...$journey,
             'status' => TrainBooking::STATUS_CONFIRMED,
             'seat_count' => count($passengers),
             'confirmed_at' => now(),
@@ -256,15 +267,45 @@ class TrainBookingService
             ->get();
     }
 
-    private function ensureTripBookable(TrainTrip $trip): void
+    private function ensureTripBookable(TrainTrip $trip, \Illuminate\Support\Carbon $boardingAt): void
     {
         if (
             $trip->status !== TrainTrip::STATUS_SCHEDULED
-            || $trip->starts_at->isPast()
+            || ! $boardingAt->isFuture()
             || ! $trip->train()->where('is_active', true)->exists()
         ) {
             throw ValidationException::withMessages(['trip' => 'This train trip is no longer available for booking.']);
         }
+    }
+
+    private function resolveJourney(TrainTrip $trip, int $boardingStationId, int $destinationStationId): array
+    {
+        if ($boardingStationId === $destinationStationId) {
+            throw ValidationException::withMessages(['stations' => 'Choose different boarding and destination stations.']);
+        }
+
+        $stops = TrainRouteStop::query()
+            ->where('train_id', $trip->train_id)
+            ->whereIn('station_id', [$boardingStationId, $destinationStationId])
+            ->whereHas('station', fn ($query) => $query->where('is_active', true))
+            ->orderBy('stop_order')
+            ->lockForUpdate()
+            ->get();
+
+        $boarding = $stops->firstWhere('station_id', $boardingStationId);
+        $destination = $stops->firstWhere('station_id', $destinationStationId);
+        if (! $boarding || ! $destination || $boarding->stop_order >= $destination->stop_order
+            || $boarding->departure_offset_minutes === null || $destination->arrival_offset_minutes === null
+            || $boarding->departure_offset_minutes >= $destination->arrival_offset_minutes) {
+            throw ValidationException::withMessages(['stations' => 'Choose active stations in the order of this train route.']);
+        }
+
+        return [
+            'boarding_station_id' => $boardingStationId,
+            'destination_station_id' => $destinationStationId,
+            'boarding_at' => $trip->starts_at->copy()->addMinutes($boarding->departure_offset_minutes),
+            'arrival_at' => $trip->starts_at->copy()->addMinutes($destination->arrival_offset_minutes),
+        ];
     }
 
     private function bookingCode(): string
