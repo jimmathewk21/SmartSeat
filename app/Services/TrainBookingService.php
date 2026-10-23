@@ -96,7 +96,7 @@ class TrainBookingService
             }
 
             $trip = TrainTrip::query()->lockForUpdate()->findOrFail($booking->train_trip_id);
-            if (($booking->boarding_at ?? $trip->starts_at)->isPast()) {
+            if (! ($booking->boarding_at ?? $trip->starts_at)->isFuture()) {
                 throw ValidationException::withMessages(['booking' => 'A train booking cannot be cancelled after departure.']);
             }
 
@@ -106,6 +106,7 @@ class TrainBookingService
                 ->lockForUpdate()
                 ->get();
 
+            $this->ensureBeforeCutoff($booking->boarding_at ?? $trip->starts_at, 'booking');
             foreach ($inventories as $inventory) {
                 $inventory->forceFill([
                     'status' => TripSeatInventory::STATUS_AVAILABLE,
@@ -119,11 +120,18 @@ class TrainBookingService
                 ->update(['released_at' => now(), 'updated_at' => now()]);
 
             $booking->forceFill(['status' => TrainBooking::STATUS_CANCELLED, 'cancelled_at' => now()])->save();
+            $promotedCutoff = null;
             if ($trip->status === TrainTrip::STATUS_SCHEDULED) {
-                $this->promoteWaitingEntry($booking->train_trip_id);
+                $promotedCutoff = $this->promoteWaitingEntry($booking->train_trip_id);
             }
 
-            return $booking->fresh(['trip.train', 'seatAssignments.inventory.seat.coach', 'passengers']);
+            $result = $booking->fresh(['trip.train', 'seatAssignments.inventory.seat.coach', 'passengers']);
+            $this->ensureBeforeCutoff($booking->boarding_at ?? $trip->starts_at, 'booking');
+            if ($promotedCutoff !== null) {
+                $this->ensureBeforeCutoff($promotedCutoff, 'waitlist');
+            }
+
+            return $result;
         }, 3);
     }
 
@@ -145,7 +153,7 @@ class TrainBookingService
         }, 3);
     }
 
-    private function promoteWaitingEntry(int $tripId): void
+    private function promoteWaitingEntry(int $tripId): ?\Illuminate\Support\Carbon
     {
         $skippedEntryIds = [];
         while ($entry = TrainWaitlistEntry::query()
@@ -170,7 +178,7 @@ class TrainBookingService
                 continue;
             }
 
-            if (($entry->boarding_at ?? $entry->trip->starts_at)->isPast()) {
+            if (! ($entry->boarding_at ?? $entry->trip->starts_at)->isFuture()) {
                 $skippedEntryIds[] = $entry->id;
                 continue;
             }
@@ -189,12 +197,18 @@ class TrainBookingService
                 'promoted_at' => now(),
             ])->save();
 
-            return;
+            $cutoff = $entry->boarding_at ?? $entry->trip->starts_at;
+            $this->ensureBeforeCutoff($cutoff, 'waitlist');
+
+            return $cutoff;
         }
+
+        return null;
     }
 
     private function createConfirmedBooking(User $user, TrainTrip $trip, Collection $inventories, array $passengers, array $journey): TrainBooking
     {
+        $this->ensureBeforeCutoff($journey['boarding_at'] ?? $trip->starts_at, 'trip');
         if (! $this->canAssign($inventories, $passengers)) {
             throw ValidationException::withMessages(['seats' => 'The selected seats do not meet passenger accessibility requirements.']);
         }
@@ -233,7 +247,19 @@ class TrainBookingService
             ]);
         }
 
-        return $booking->load(['trip.train', 'passengers', 'seatAssignments.inventory.seat.coach']);
+        $result = $booking->load(['trip.train', 'passengers', 'seatAssignments.inventory.seat.coach']);
+        $this->ensureBeforeCutoff($booking->boarding_at ?? $trip->starts_at, 'trip');
+
+        return $result;
+    }
+
+    private function ensureBeforeCutoff(\Illuminate\Support\Carbon $cutoff, string $key): void
+    {
+        // Throw inside the transaction so all writes roll back after lock or query delays.
+        // The database commit itself can still finish after this application-side check.
+        if (! $cutoff->isFuture()) {
+            throw ValidationException::withMessages([$key => 'The boarding departure cutoff has passed.']);
+        }
     }
 
     private function canAssign(Collection $inventories, array $passengers): bool
