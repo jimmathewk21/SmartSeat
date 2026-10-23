@@ -1,0 +1,14 @@
+*
+!public/
+!.gitignore
+/vendor
+/node_modules
+/public/storage
+/storage/*.key
+.env
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+.env.testing
+/storage/app/public
+/storage/app/*.json

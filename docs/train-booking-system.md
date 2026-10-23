@@ -1,0 +1,77 @@
+# Smart Train Booking System
+
+## Current implementation
+
+The train module is separate from event ticketing. It provides public station-to-station search, authenticated seat booking, passenger details, booking history, cancellation, and a waitlist that can be promoted when cancellation releases inventory.
+
+Routes:
+
+- `GET /trains` — search by origin, destination, and travel date.
+- `POST /trips/{trip}/book` — confirm selected seats for the signed-in user.
+- `POST /trips/{trip}/waitlist` — join the trip waitlist.
+- `GET /my-train-bookings` — list the signed-in user's train bookings.
+- `POST /my-train-bookings/{booking}/cancel` — cancel a future confirmed booking.
+
+Train sign-in and registration use dedicated SmartSeat pages at `/trains/sign-in` and `/trains/register`, while posting credentials and registration data to the existing Laravel `login` and `register` routes. The train sign-in flow preserves only a validated local search or booking-history destination. Train-origin registrations receive the separate `participants.train_access_enabled` flag and can use train routes without administrator approval; `participants.is_approved` and `users.verification_status` remain false, so event routes keep their existing approval requirement and UI. Event-origin registrations do not receive train access. A one-time session token rendered only by the dedicated train registration form identifies train-origin submissions; the event registration page clears that token. Existing pending accounts are not changed or enabled by this feature and need a separately reviewed administrative decision before train access is granted.
+
+The public UI expects train, route, trip, coach, and seat data to exist. `TrainInventoryService::initializeForTrip()` provisions one available row per seat and is safe to call again. The private Train Owner entry point is `/internal/rail-owner/entry`; it is deliberately absent from public and passenger navigation. The entry URL is not an authorization boundary: protected routes require authentication, the exact `Train Owner` role, `train_owner_approved_at`, and the required permission attached to that role. Admin role membership alone does not satisfy these checks.
+
+Administrators approve an owner through the existing authenticated Admin → Users editor. The account must have a participant record; review the account, assign the `Train Owner` role, select the trains the account may manage, and set owner approval to Approved. This does not set passenger/event approval. The role, owner approval timestamp, and train assignment are all required. Selecting a train already assigned elsewhere transfers that assignment; removing the Train Owner role clears the account's train assignments and approval. Passenger/event approval remains independent. Owners can view and update only assigned train code, name, and active status. Cross-owner edits return not found. A session created through the private owner login is limited to owner routes. The first owner account must be created or selected by an administrator; the application creates no default owner credentials.
+
+### Train-only demonstration data
+
+`Database\Seeders\TrainDemoSeeder` is the original reserved demo seeder. Its preflight still inspects the legacy `SS-DEMO-01/02` trains, their routes, trips, coaches, seats, inventory, bookings, booking passengers/assignments, and waitlist entries/passengers, plus both retired fictional station keys and the Indian station codes. It aborts before writing if it finds booking or waitlist history, seat assignments, booked/non-available inventory, or a reserved station shared by another train route. Do not weaken or bypass this check to refresh legacy demo records. In particular, any confirmed booking on one of those reserved trips continues to block this seeder.
+
+`Database\Seeders\IndianTrainDemoSeeder` creates a separate catalog for new Indian railway demonstrations: CSMT (Mumbai), Pune Junction, Nashik Road, and Nagpur Junction in Maharashtra, with two clearly fictional SmartSeat services and opposite ordered routes. Their names are marked fictional; the schema has no dedicated train-number field, and the seeder assigns no real Indian Railways service numbers. It creates separate train codes (`SS-IN-DEMO-01/02`), route stops, D1 coaches, eight seats per train, one scheduled trip per train, and any missing inventory. Trips are scheduled at 08:00 application time, seven days ahead by default; `TRAIN_DEMO_DAYS_AHEAD` selects a lead time from 1 to 30 days. Existing station rows are insert-only: if a reserved station code already exists with different details or inactive status, the new seeder stops instead of renaming or activating it. A separate locked preflight guards history attached to the new train codes. Repeated runs upsert only those isolated train/route/coach/seat/trip keys and insert missing inventory. This seeder does not update, deactivate, or repoint legacy station, train, route, trip, seat, inventory, or booking records. Neither train seeder is registered with `DatabaseSeeder`, so event application seeders are not invoked. The train schema currently has no fare field or fare display; the event platform's currency settings do not apply to train bookings.
+
+The public search service filters the legacy fictional station and train codes listed in `config/train.php`, without changing their database rows. Booking history loads its train and route directly from the booking's trip, so this search-only exclusion leaves historical route references intact. No schema migration is needed for the isolated catalog or search filter.
+
+Both train demo seeders are explicit commands and check the effective connection, configured database, and actual connected database; they are restricted to MySQL `smartseat_dev`. The isolated dataset command is `php artisan db:seed --database=mysql --class=IndianTrainDemoSeeder`. Review the corresponding preflight and confirm the target before running it. Do not run the general `db:seed` command for train demo data.
+
+## Search frontend
+
+The first public frontend milestone is served by the existing `GET /trains` route (`frontend.trains.search`) and `FrontendTrainController::index()`. The controller renders `resources/views/frontend/trains/search.blade.php`; searches and results share the same page. The view uses the existing frontend header and footer, with train-only responsive styling in `public/css/train-search.css` and small vanilla JavaScript interactions in `public/js/train-search.js`.
+
+The search form submits the existing `from_station_id`, `to_station_id`, and `date` query parameters. It presents server validation errors, an empty-results state, and journey cards from `TrainSearchService`. Signed-in users can expand the existing booking or waitlist forms; those submit to the existing authenticated routes and do not bypass service validation. The passenger controls support up to six passengers, and the booking form checks that the number of selected seats matches the passenger count before submission. The waitlist form carries the search parameters so the existing controller can return the user to the same results. No additional packages or backend endpoints are required.
+
+Available inventory rows are the seat-selection source: each checkbox submits its actual `trip_seat_inventories.id`, while the booking service locks and revalidates those rows before confirming. A successful booking redirects to the existing authenticated history page, where a session-scoped confirmation panel displays the real booking code, confirmed status, scheduled service route/times, passengers, and assignments. Booking history remains the owner-scoped source for cancellation. A successful waitlist request returns to search with its entry ID and `waiting` status; the history page distinguishes waiting, promoted, and cancelled entries, and shows the promoted booking reference when one exists. A pending waitlist entry is not represented as a confirmed booking.
+
+## Data model
+
+- `stations` stores station codes and searchable names.
+- `trains` owns ordered `train_route_stops`, `train_coaches`, and `train_seats`.
+- `train_trips` stores dated schedules. Route stop offsets are minutes from the trip start time.
+- `trip_seat_inventories` has one row per trip and physical seat. Its status and `current_booking_id` represent the authoritative current allocation.
+- `train_bookings`, `train_booking_passengers`, and `train_booking_seats` record confirmed/cancelled bookings and assignment history.
+- `train_waitlist_entries` and `train_waitlist_passengers` store waiting requests separately from bookings.
+
+## Inventory safety
+
+Each booking, cancellation, and waitlist promotion runs in a database transaction. Allocation locks the trip row and selected inventory rows with `FOR UPDATE`, then checks that the selected rows are available before changing them to booked. The fourth train migration explicitly converts train-domain tables to InnoDB on MySQL/MariaDB. A unique `(train_trip_id, train_seat_id)` key prevents duplicate inventory rows; a generated nullable key and unique constraint permit only one unreleased booking-seat assignment per inventory row while retaining released history. Composite foreign keys bind an assignment to inventory from its booking's trip and to a passenger from its booking. An enforced `CHECK` requires `available` inventory to have a null booking pointer and `booked` inventory to have a non-null pointer. Cancellation locks the booking, trip, and assigned inventory before releasing seats. Promotion considers waiting entries by `created_at`, then `id`; entries that cannot currently be satisfied are skipped for that promotion attempt, and the first satisfiable request uses the same assignment path.
+
+Booking and waitlist service entry points validate passenger payloads as well as the HTTP requests, so direct service callers receive Laravel validation errors for missing or invalid passenger details before booking or waitlist writes begin.
+
+Use MySQL with InnoDB for production concurrency guarantees. Sequential duplicate-booking tests verify service behavior, but do not prove row-lock behavior. A practical race test requires a disposable MySQL schema with the train migrations applied and committed fixture rows, plus two independent PHP worker processes/connections. Release both workers from a barrier to book the same trip-seat simultaneously, then assert one confirmed booking, one rejected request, and exactly one unreleased assignment. Finally verify that all train tables report `ENGINE=InnoDB`. On environments without process control (for example, a Windows PHP runner without an equivalent worker harness), run this as an external integration test or CI job; do not interpret SQLite or sequential tests as concurrency verification.
+
+The feature suite also has focused database-integrity checks for cross-trip and cross-booking references, duplicate active assignment, inventory status/pointer mismatch, ownership, and rollback after booking or promotion failure. It uses `DatabaseTransactions` and writes temporary fixture rows to its configured database; run it only against a dedicated test database with the fourth migration applied, never against `smartseat_dev`. `TrainDemoSeederSafetyTest` additionally requires the explicitly named `smartseat_train_test` MySQL database with the application and train tables already migrated; otherwise it skips before starting a transaction. It checks abort-without-mutation for booking history and booked assignments, plus duplicate-free clean reruns. The metadata, passenger-validation, and seeder-preflight policy unit tests do not connect to a database.
+
+## Migrations and operations
+
+The additive migrations are:
+
+1. `2026_10_22_000001_create_train_catalog_tables`
+2. `2026_10_22_000002_create_train_trips_and_inventory_tables`
+3. `2026_10_22_000003_create_train_booking_tables`
+4. `2026_10_22_000004_harden_train_inventory_constraints`
+5. `2026_10_23_000001_add_train_access_enabled_to_participants`
+6. `2026_10_23_000002_add_train_owner_authorization`
+
+The owner-authorization migration adds the separate owner approval timestamp, nullable train-to-owner assignment, Train Owner role, and owner-only permissions. Existing trains remain unassigned until an administrator assigns them in the Admin user editor. Do not assign the Train Owner role or owner approval to passenger accounts as part of normal passenger registration.
+
+The fourth migration is additive because the application status of the first three migrations is unknown. It modifies only train-domain tables and does not rewrite migrations 000001–000003. It supports Oracle MySQL 8.0.16 or newer and MariaDB 10.2.1 or newer, where `CHECK` constraints are enforced. It rejects other drivers, vendors, and older versions before changing the schema; it does not silently skip the state constraint. On MariaDB it also requires `check_constraint_checks` to be enabled for the migration session. Keep CHECK enforcement enabled for application sessions. The active-assignment uniqueness rule still uses a stored generated column, so the server must support indexed stored generated columns as well.
+
+Migration 000004 checks that the required train tables exist, validates inventory status/pointer pairs, current-booking/trip links, assignment/trip/passenger links, duplicate active assignments, and the one-to-one agreement between each booked inventory pointer and its unreleased assignment. It also rejects unreleased assignments for non-confirmed bookings. Correct reported rows only after reviewing the booking and cancellation history; do not delete or rewrite history automatically. A safe repair preserves all rows and timestamps: reconcile the booking status, assignment `released_at`, inventory `status`, and `current_booking_id` as one reviewed unit, then re-run the preflight and verify the related booking/assignment history before retrying.
+
+Before treating hardening as complete, 000004 verifies each named unique index's uniqueness and ordered columns, the CHECK expression, both composite foreign keys' ordered local and referenced columns and referential actions, the generated column's stored expression/type/nullability, and the train-table engines. The generated-column type comparison tolerates MariaDB's integer display width while still requiring an unsigned BIGINT. If named objects exist but differ, it stops with a diagnostic instead of attempting to replace them. MySQL/MariaDB DDL can persist partially if a later operation fails. Stop automatic retries, take a backup, inspect `SHOW CREATE TABLE` and the relevant `information_schema` entries for the named indexes, foreign keys, check, generated column, and table engines. Complete or remove only the named 000004 objects after reviewing their definitions; preserve all train tables and rows. A complete schema left behind after an interrupted migration is detected and accepted on retry only when the definitions match. Rollback removes the constraints and helper column but intentionally leaves the train tables on InnoDB.
+
+If the database is older than the supported floor, the safest path is to upgrade it. If upgrading is impossible, do not apply 000004: a separately reviewed and tested trigger-based implementation is required to enforce the same invariant on that server. No trigger fallback is installed by this migration.

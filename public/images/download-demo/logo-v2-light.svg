@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="140" viewBox="0 0 240 140">
+  <rect width="240" height="140" fill="#ffffff"/>
+  <circle cx="120" cy="58" r="38" fill="none" stroke="#1f3d8f" stroke-width="10" stroke-dasharray="6 4"/>
+  <path d="M96 80V36h24l24 18-24 18H96" fill="none" stroke="#ef4444" stroke-width="10" stroke-linejoin="round"/>
+  <text x="120" y="128" fill="#111111" font-family="Arial, sans-serif" font-size="18" font-weight="700" text-anchor="middle">Version 2</text>
+</svg>

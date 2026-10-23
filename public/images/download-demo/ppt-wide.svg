@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="widebg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1d4ed8"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#widebg)"/>
+  <text x="120" y="210" fill="#ffffff" font-family="Arial, sans-serif" font-size="120" font-weight="700">LESI 2026</text>
+  <text x="860" y="210" fill="#bfdbfe" font-family="Arial, sans-serif" font-size="132" font-weight="700">DUBLIN</text>
+  <text x="120" y="330" fill="#ffffff" font-family="Arial, sans-serif" font-size="54">ANNUAL CONFERENCE APRIL 26-29</text>
+  <text x="120" y="430" fill="#ffffff" font-family="Arial, sans-serif" font-size="76" font-weight="700">INNOVATION TO IMPACT</text>
+  <text x="120" y="520" fill="#ffffff" font-family="Arial, sans-serif" font-size="48">IP international growth engine</text>
+  <rect x="120" y="870" width="340" height="96" rx="8" fill="#f59e0b"/>
+  <text x="290" y="930" fill="#ffffff" font-family="Arial, sans-serif" font-size="42" font-weight="700" text-anchor="middle">lesi2026.org</text>
+</svg>

@@ -1,0 +1,52 @@
+/.phpunit.cache
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+.env
+.env.backup
+.env.production
+Homestead.json
+Homestead.yaml
+auth.json
+npm-debug.log
+yarn-error.log
+/.fleet
+/.idea
+/.vscode
+"storage/*.json" 
+.DS_Store
+Thumbs.db
+.phpunit.result.cache
+*.jpg
+tests/e2e/.auth/
+
+graphify*
+
+playwright-report
+test-results
+.env.*
+!.env.example
+
+# Environment variants
+.env.*
+!.env.example
+
+# Laravel runtime and generated files
+/storage/framework/
+/storage/logs/*
+!/storage/logs/.gitignore
+/bootstrap/cache/*.php
+
+# Temporary debugging scripts and output
+.codex_tmp_*.php
+.tmp_*.php
+tmp_*.php
+*-debug.php
+tmp_*.txt
+
+# Local agent configuration
+.claude/
+.scribe/

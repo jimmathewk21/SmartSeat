@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080">
+  <rect width="1080" height="1080" fill="#1e293b"/>
+  <text x="120" y="170" fill="#f59e0b" font-family="Arial, sans-serif" font-size="84" font-weight="700">DUBAI'S</text>
+  <text x="120" y="260" fill="#ffffff" font-family="Arial, sans-serif" font-size="92" font-weight="700">BIGGEST</text>
+  <text x="120" y="350" fill="#fbbf24" font-family="Arial, sans-serif" font-size="72" font-weight="700">IP CONFERENCE</text>
+  <g fill="#ffffff">
+    <rect x="120" y="470" width="180" height="180" rx="18"/><rect x="335" y="470" width="180" height="180" rx="18"/><rect x="550" y="470" width="180" height="180" rx="18"/><rect x="765" y="470" width="180" height="180" rx="18"/>
+  </g>
+  <g fill="#ffffff">
+    <rect x="120" y="690" width="180" height="180" rx="18"/><rect x="335" y="690" width="180" height="180" rx="18"/><rect x="550" y="690" width="180" height="180" rx="18"/><rect x="765" y="690" width="180" height="180" rx="18"/>
+  </g>
+  <text x="900" y="190" fill="#ffffff" font-family="Arial, sans-serif" font-size="56" font-weight="700" text-anchor="end">JANUARY</text>
+</svg>

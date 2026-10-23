@@ -1,0 +1,1673 @@
+openapi: 3.0.3
+info:
+  title: Laravel
+  description: ''
+  version: 1.0.0
+servers:
+  -
+    url: 'http://localhost'
+paths:
+  /api/v1/cabtypes:
+    get:
+      summary: ''
+      operationId: getApiV1Cabtypes
+      description: ''
+      parameters: []
+      responses:
+        500:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Server Error'
+                properties:
+                  message:
+                    type: string
+                    example: 'Server Error'
+      tags:
+        - 'Cab Types'
+      security: []
+  /api/v1/calculate-fares:
+    post:
+      summary: ''
+      operationId: postApiV1CalculateFares
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'Cab Types'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                distance:
+                  type: number
+                  description: 'Must be at least 0.'
+                  example: 8
+                duration:
+                  type: number
+                  description: 'Must be at least 0.'
+                  example: 22
+              required:
+                - distance
+                - duration
+      security: []
+  /api/v1/store-cab-by-partner:
+    post:
+      summary: ''
+      operationId: postApiV1StoreCabByPartner
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Cabs
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                vehicle_number:
+                  type: string
+                  description: ''
+                  example: enim
+                vehicleImage:
+                  type: string
+                  format: binary
+                  description: 'Must be a file.'
+                cab_type_id:
+                  type: integer
+                  description: ''
+                  example: 16
+                car_model_name:
+                  type: string
+                  description: ''
+                  example: eos
+                registration_certificate_or_smart_card:
+                  type: string
+                  format: binary
+                  description: 'Must be a file.'
+                tax:
+                  type: string
+                  format: binary
+                  description: 'Must be a file.'
+                insurance:
+                  type: string
+                  format: binary
+                  description: 'Must be a file.'
+                puc:
+                  type: string
+                  format: binary
+                  description: 'Must be a file.'
+                noc:
+                  type: string
+                  format: binary
+                  description: 'Must be a file.'
+                permit:
+                  type: string
+                  format: binary
+                  description: 'Must be a file.'
+                sld_certificate:
+                  type: string
+                  format: binary
+                  description: 'Must be a file.'
+                tax_expiry_date:
+                  type: string
+                  description: ''
+                  example: dignissimos
+                insurance_expiry_date:
+                  type: string
+                  description: ''
+                  example: porro
+                puc_expiry_date:
+                  type: string
+                  description: ''
+                  example: dolorum
+                permit_renewal_date:
+                  type: string
+                  description: ''
+                  example: eius
+              required:
+                - vehicle_number
+                - cab_type_id
+                - car_model_name
+      security: []
+  /api/v1/store-cab-by-driver:
+    post:
+      summary: ''
+      operationId: postApiV1StoreCabByDriver
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Cabs
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                vehicle_number:
+                  type: string
+                  description: 'Must not be greater than 255 characters.'
+                  example: xwsfiyovjxomoegzs
+                vehicleImage:
+                  type: string
+                  format: binary
+                  description: 'Must be a file.'
+                cab_type_id:
+                  type: integer
+                  description: ''
+                  example: 1
+                car_model_name:
+                  type: string
+                  description: ''
+                  example: aut
+              required:
+                - vehicle_number
+                - cab_type_id
+                - car_model_name
+      security: []
+  /api/v1/register_driver_by_partner:
+    post:
+      summary: ''
+      operationId: postApiV1Register_driver_by_partner
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Cabs
+      security: []
+  /api/v1/cabs:
+    get:
+      summary: ''
+      operationId: getApiV1Cabs
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+      tags:
+        - Cabs
+      security: []
+  /api/v1/cabs/assign-driver:
+    post:
+      summary: ''
+      operationId: postApiV1CabsAssignDriver
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Cabs
+      security: []
+  '/api/v1/check-driver-assignment/{driverId}':
+    get:
+      summary: ''
+      operationId: getApiV1CheckDriverAssignmentDriverId
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+      tags:
+        - Cabs
+      security: []
+    parameters:
+      -
+        in: path
+        name: driverId
+        description: ''
+        example: molestiae
+        required: true
+        schema:
+          type: string
+  '/api/v1/cabs/{cabId}':
+    post:
+      summary: ''
+      operationId: postApiV1CabsCabId
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Cabs
+      security: []
+    parameters:
+      -
+        in: path
+        name: cabId
+        description: ''
+        example: ut
+        required: true
+        schema:
+          type: string
+  /api/v1/partner/drivers:
+    get:
+      summary: ''
+      operationId: getApiV1PartnerDrivers
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+      tags:
+        - Cabs
+      security: []
+  /api/v1/partner/delete-driver:
+    post:
+      summary: ''
+      operationId: postApiV1PartnerDeleteDriver
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Cabs
+      security: []
+  '/api/v1/partner/driver/{driverId}/update':
+    post:
+      summary: ''
+      operationId: postApiV1PartnerDriverDriverIdUpdate
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Cabs
+      security: []
+    parameters:
+      -
+        in: path
+        name: driverId
+        description: ''
+        example: quidem
+        required: true
+        schema:
+          type: string
+  /api/v1/find-cab-by-partner:
+    post:
+      summary: ''
+      operationId: postApiV1FindCabByPartner
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Cabs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                vehicle_number:
+                  type: string
+                  description: 'Must not be greater than 255 characters.'
+                  example: jgbbh
+              required:
+                - vehicle_number
+      security: []
+  '/api/v1/cabs/{id}/generate-qr-code':
+    post:
+      summary: ''
+      operationId: postApiV1CabsIdGenerateQrCode
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Cabs
+      security: []
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the cab.'
+        example: sint
+        required: true
+        schema:
+          type: string
+  /api/v1/city:
+    get:
+      summary: ''
+      operationId: getApiV1City
+      description: ''
+      parameters: []
+      responses:
+        500:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Server Error'
+                properties:
+                  message:
+                    type: string
+                    example: 'Server Error'
+      tags:
+        - City
+      security: []
+  /api/v1/coupon:
+    get:
+      summary: ''
+      operationId: getApiV1Coupon
+      description: ''
+      parameters: []
+      responses:
+        500:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Server Error'
+                properties:
+                  message:
+                    type: string
+                    example: 'Server Error'
+      tags:
+        - Endpoints
+      security: []
+  /api/v1/find-coupon:
+    post:
+      summary: ''
+      operationId: postApiV1FindCoupon
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                promo_code:
+                  type: string
+                  description: ''
+                  example: dolore
+              required:
+                - promo_code
+      security: []
+  /api/v1/customerrating:
+    post:
+      summary: ''
+      operationId: postApiV1Customerrating
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'Ratings and Reviews'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                customer_rating:
+                  type: string
+                  description: "'driver_rating' => ['required'],."
+                  example: dolor
+              required:
+                - customer_rating
+      security: []
+  /api/v1/driverrating:
+    post:
+      summary: ''
+      operationId: postApiV1Driverrating
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'Ratings and Reviews'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                driver_rating:
+                  type: string
+                  description: ''
+                  example: modi
+              required:
+                - driver_rating
+      security: []
+  /api/v1/ratingandreviews:
+    get:
+      summary: ''
+      operationId: getApiV1Ratingandreviews
+      description: ''
+      parameters: []
+      responses:
+        500:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Server Error'
+                properties:
+                  message:
+                    type: string
+                    example: 'Server Error'
+      tags:
+        - 'Ratings and Reviews'
+      security: []
+  /api/v1/state:
+    get:
+      summary: ''
+      operationId: getApiV1State
+      description: ''
+      parameters: []
+      responses:
+        500:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Server Error'
+                properties:
+                  message:
+                    type: string
+                    example: 'Server Error'
+      tags:
+        - State
+      security: []
+  '/api/v1/state/{id}':
+    post:
+      summary: ''
+      operationId: postApiV1StateId
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - State
+      security: []
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the state.'
+        example: 6
+        required: true
+        schema:
+          type: integer
+  /api/v1/book-trip:
+    post:
+      summary: ''
+      operationId: postApiV1BookTrip
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Trips
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pickup_latitude:
+                  type: string
+                  description: ''
+                  example: perferendis
+                pickup_longitude:
+                  type: string
+                  description: ''
+                  example: necessitatibus
+                destination_latitude:
+                  type: string
+                  description: ''
+                  example: et
+                destination_longitude:
+                  type: string
+                  description: ''
+                  example: molestiae
+                pickup_location:
+                  type: string
+                  description: ''
+                  example: qui
+                drop_location:
+                  type: string
+                  description: ''
+                  example: est
+                pickup_time:
+                  type: string
+                  description: 'Must be a valid date in the format <code>H:i:s</code>.'
+                  example: '05:52:46'
+                distance:
+                  type: number
+                  description: ''
+                  example: 46.4
+              required:
+                - pickup_latitude
+                - pickup_longitude
+                - destination_latitude
+                - destination_longitude
+                - pickup_location
+                - drop_location
+                - pickup_time
+                - distance
+      security: []
+  /api/v1/end-trip:
+    post:
+      summary: ''
+      operationId: postApiV1EndTrip
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Trips
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                trip_id:
+                  type: string
+                  description: ''
+                  example: consequatur
+                drop_time:
+                  type: string
+                  description: 'Must be a valid date in the format <code>H:i:s</code>.'
+                  example: '05:52:46'
+                distance:
+                  type: number
+                  description: ''
+                  example: 77030302.88919
+              required:
+                - trip_id
+                - drop_time
+                - distance
+      security: []
+  /api/v1/accept-trip:
+    post:
+      summary: ''
+      operationId: postApiV1AcceptTrip
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Trips
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                trip_id:
+                  type: string
+                  description: ''
+                  example: sunt
+              required:
+                - trip_id
+      security: []
+  /api/v1/reject-trip:
+    post:
+      summary: ''
+      operationId: postApiV1RejectTrip
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Trips
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                trip_id:
+                  type: string
+                  description: ''
+                  example: voluptatem
+              required:
+                - trip_id
+      security: []
+  /api/v1/check-current-trip:
+    get:
+      summary: ''
+      operationId: getApiV1CheckCurrentTrip
+      description: ''
+      parameters: []
+      responses:
+        500:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Server Error'
+                properties:
+                  message:
+                    type: string
+                    example: 'Server Error'
+      tags:
+        - Trips
+      security: []
+  /api/v1/book-meter-trip:
+    post:
+      summary: ''
+      operationId: postApiV1BookMeterTrip
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Trips
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pickup_latlong:
+                  type: string
+                  description: ''
+                  example: tenetur
+                pickup_location:
+                  type: string
+                  description: ''
+                  example: quo
+                pickup_time:
+                  type: string
+                  description: ''
+                  example: velit
+                trip_category:
+                  type: string
+                  description: ''
+                  example: null
+              required:
+                - pickup_latlong
+                - pickup_location
+                - pickup_time
+      security: []
+  /api/v1/end-meter-trip:
+    post:
+      summary: ''
+      operationId: postApiV1EndMeterTrip
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Trips
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pickup_latlong:
+                  type: string
+                  description: ''
+                  example: velit
+                destination_latlong:
+                  type: string
+                  description: ''
+                  example: similique
+                pickup_location:
+                  type: string
+                  description: ''
+                  example: veniam
+                drop_location:
+                  type: string
+                  description: ''
+                  example: voluptatem
+                pickup_time:
+                  type: string
+                  description: 'Must be a valid date in the format <code>H:i:s</code>.'
+                  example: '05:52:46'
+                drop_time:
+                  type: string
+                  description: 'Must be a valid date in the format <code>H:i:s</code>.'
+                  example: '05:52:46'
+                trip_category:
+                  type: string
+                  description: ''
+                  example: null
+                distance:
+                  type: number
+                  description: ''
+                  example: 664.41715
+              required:
+                - pickup_latlong
+                - destination_latlong
+                - pickup_location
+                - drop_location
+                - pickup_time
+                - drop_time
+                - distance
+      security: []
+  /api/v1/send-meter-otp:
+    post:
+      summary: ''
+      operationId: postApiV1SendMeterOtp
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Trips
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mobile:
+                  type: string
+                  description: 'Must be 10 digits.'
+                  example: '3958566172'
+              required:
+                - mobile
+      security: []
+  /api/v1/verify-meter-otp:
+    post:
+      summary: ''
+      operationId: postApiV1VerifyMeterOtp
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Trips
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                otp:
+                  type: string
+                  description: ''
+                  example: non
+                mobile:
+                  type: string
+                  description: ''
+                  example: illo
+              required:
+                - otp
+                - mobile
+      security: []
+  /api/v1/trip-history/customer:
+    get:
+      summary: ''
+      operationId: getApiV1TripHistoryCustomer
+      description: ''
+      parameters: []
+      responses:
+        500:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Server Error'
+                properties:
+                  message:
+                    type: string
+                    example: 'Server Error'
+      tags:
+        - Trips
+      security: []
+  /api/v1/trip-history/driver:
+    get:
+      summary: ''
+      operationId: getApiV1TripHistoryDriver
+      description: ''
+      parameters: []
+      responses:
+        500:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Server Error'
+                properties:
+                  message:
+                    type: string
+                    example: 'Server Error'
+      tags:
+        - Trips
+      security: []
+  /api/v1/driver/update-location:
+    post:
+      summary: ''
+      operationId: postApiV1DriverUpdateLocation
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Trips
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                driver_id:
+                  type: string
+                  description: ''
+                  example: vel
+                latitude:
+                  type: string
+                  description: ''
+                  example: enim
+                longitude:
+                  type: string
+                  description: ''
+                  example: similique
+              required:
+                - driver_id
+                - latitude
+                - longitude
+      security: []
+  /api/v1/cancel-trip:
+    post:
+      summary: ''
+      operationId: postApiV1CancelTrip
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Trips
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                trip_id:
+                  type: integer
+                  description: ''
+                  example: 4
+              required:
+                - trip_id
+      security: []
+  /api/v1/login:
+    post:
+      summary: ''
+      operationId: postApiV1Login
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'User Authentication'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mobile:
+                  type: string
+                  description: 'Must be 10 digits.'
+                  example: '1842104017'
+              required:
+                - mobile
+      security: []
+  /api/v1/logout:
+    post:
+      summary: ''
+      operationId: postApiV1Logout
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'User Authentication'
+      security: []
+  /api/v1/login-driver-or-partner:
+    post:
+      summary: ''
+      operationId: postApiV1LoginDriverOrPartner
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'User Authentication'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mobile:
+                  type: string
+                  description: 'Must be 10 digits.'
+                  example: '6004612378'
+              required:
+                - mobile
+      security: []
+  /api/v1/register/customer1:
+    post:
+      summary: ''
+      operationId: postApiV1RegisterCustomer1
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'User Authentication'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mobile:
+                  type: number
+                  description: ''
+                  example: 11714255.5744
+              required:
+                - mobile
+      security: []
+  /api/v1/register/customer2:
+    post:
+      summary: ''
+      operationId: postApiV1RegisterCustomer2
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'User Authentication'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                mobile:
+                  type: number
+                  description: ''
+                  example: 10977.3874
+                name:
+                  type: string
+                  description: 'Must not be greater than 255 characters.'
+                  example: mauegrnkgmvwchasgggkez
+                password:
+                  type: string
+                  description: 'Must be at least 8 characters.'
+                  example: 'v</"u1yDU8^'
+                email:
+                  type: string
+                  description: 'Must be a valid email address. Must not be greater than 255 characters.'
+                  example: ostehr@example.org
+                profile_picture:
+                  type: string
+                  format: binary
+                  description: 'Must be a file.'
+              required:
+                - mobile
+                - name
+                - password
+                - email
+      security: []
+  /api/v1/checkmobile:
+    post:
+      summary: ''
+      operationId: postApiV1Checkmobile
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'User Authentication'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mobile:
+                  type: string
+                  description: ''
+                  example: consequatur
+              required:
+                - mobile
+      security: []
+  /api/v1/register/driver1:
+    post:
+      summary: ''
+      operationId: postApiV1RegisterDriver1
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'User Authentication'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mobile:
+                  type: string
+                  description: ''
+                  example: voluptate
+              required:
+                - mobile
+      security: []
+  /api/v1/register/driver2:
+    post:
+      summary: ''
+      operationId: postApiV1RegisterDriver2
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'User Authentication'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'Must not be greater than 255 characters.'
+                  example: jvnnfhpnxqqdkjgmhw
+                mobile:
+                  type: string
+                  description: ''
+                  example: eveniet
+                password:
+                  type: string
+                  description: 'Must be at least 8 characters.'
+                  example: 'xrIWY"4g'
+                email:
+                  type: string
+                  description: 'Must be a valid email address. Must not be greater than 255 characters.'
+                  example: awest@example.net
+                driving_license_no:
+                  type: string
+                  description: ''
+                  example: expedita
+                profile_picture:
+                  type: string
+                  format: binary
+                  description: 'Must be a file.'
+              required:
+                - name
+                - mobile
+                - password
+                - email
+                - driving_license_no
+      security: []
+  /api/v1/register/driver3:
+    post:
+      summary: ''
+      operationId: postApiV1RegisterDriver3
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'User Authentication'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                mobile:
+                  type: string
+                  description: ''
+                  example: quia
+                country:
+                  type: string
+                  description: ''
+                  example: unde
+                state:
+                  type: string
+                  description: ''
+                  example: quia
+                district:
+                  type: string
+                  description: ''
+                  example: repellendus
+                city_id:
+                  type: string
+                  description: ''
+                  example: molestias
+                locality:
+                  type: string
+                  description: ''
+                  example: eos
+                address:
+                  type: string
+                  description: ''
+                  example: ut
+                pincode:
+                  type: string
+                  description: ''
+                  example: perferendis
+                license_for_vehicle_category:
+                  type: string
+                  description: ''
+                  example: debitis
+                license_expiary:
+                  type: string
+                  description: ''
+                  example: ducimus
+                driving_license:
+                  type: string
+                  format: binary
+                  description: 'Must be a file.'
+                pan_card:
+                  type: string
+                  format: binary
+                  description: 'Must be a file.'
+                aadhar_card:
+                  type: string
+                  format: binary
+                  description: 'Must be a file.'
+              required:
+                - mobile
+                - country
+                - state
+                - district
+                - city_id
+                - locality
+                - address
+                - pincode
+                - license_for_vehicle_category
+                - license_expiary
+      security: []
+  /api/v1/register/driver4:
+    post:
+      summary: ''
+      operationId: postApiV1RegisterDriver4
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'User Authentication'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                mobile:
+                  type: string
+                  description: ''
+                  example: eos
+                cab_type_id:
+                  type: string
+                  description: ''
+                  example: sint
+                city_id:
+                  type: string
+                  description: ''
+                  example: null
+                car_model_name:
+                  type: string
+                  description: "'car_model_id' => ['nullable', 'string'],."
+                  example: accusamus
+                vehicle_number:
+                  type: string
+                  description: ''
+                  example: nesciunt
+                image:
+                  type: string
+                  format: binary
+                  description: 'Must be a file.'
+                registration_certificate_or_smart_card:
+                  type: string
+                  format: binary
+                  description: 'Must be a file.'
+                tax:
+                  type: string
+                  format: binary
+                  description: 'Must be a file.'
+                insurance:
+                  type: string
+                  format: binary
+                  description: 'Must be a file.'
+                puc:
+                  type: string
+                  format: binary
+                  description: 'Must be a file.'
+                noc:
+                  type: string
+                  format: binary
+                  description: 'Must be a file.'
+                permit:
+                  type: string
+                  format: binary
+                  description: 'Must be a file.'
+                sld_certificate:
+                  type: string
+                  format: binary
+                  description: 'Must be a file.'
+                tax_expiry_date:
+                  type: string
+                  description: ''
+                  example: est
+                insurance_expiry_date:
+                  type: string
+                  description: ''
+                  example: repellendus
+                puc_expiry_date:
+                  type: string
+                  description: ''
+                  example: esse
+                permit_renewal_date:
+                  type: string
+                  description: ''
+                  example: repellendus
+              required:
+                - mobile
+      security: []
+  /api/v1/register/partner1:
+    post:
+      summary: ''
+      operationId: postApiV1RegisterPartner1
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'User Authentication'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mobile:
+                  type: string
+                  description: 'Must be 10 digits.'
+                  example: '6216078545'
+              required:
+                - mobile
+      security: []
+  /api/v1/register/partner2:
+    post:
+      summary: ''
+      operationId: postApiV1RegisterPartner2
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'User Authentication'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 'Must not be greater than 255 characters.'
+                  example: xddpcyeeiq
+                company_name:
+                  type: string
+                  description: ''
+                  example: unde
+                mobile:
+                  type: integer
+                  description: ''
+                  example: 14
+                password:
+                  type: string
+                  description: 'Must be at least 8 characters.'
+                  example: "&r'Wq54M"
+                email:
+                  type: string
+                  description: 'Must be a valid email address. Must not be greater than 255 characters.'
+                  example: terence.mcclure@example.com
+                profile_picture:
+                  type: string
+                  format: binary
+                  description: 'Must be a file.'
+              required:
+                - name
+                - company_name
+                - mobile
+                - password
+                - email
+      security: []
+  /api/v1/register/partner3:
+    post:
+      summary: ''
+      operationId: postApiV1RegisterPartner3
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'User Authentication'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                mobile:
+                  type: string
+                  description: ''
+                  example: culpa
+                country:
+                  type: string
+                  description: ''
+                  example: esse
+                state:
+                  type: string
+                  description: ''
+                  example: sit
+                district:
+                  type: string
+                  description: ''
+                  example: laborum
+                city_id:
+                  type: string
+                  description: ''
+                  example: omnis
+                pincode:
+                  type: string
+                  description: ''
+                  example: optio
+                locality:
+                  type: string
+                  description: ''
+                  example: ipsam
+                address:
+                  type: string
+                  description: ''
+                  example: fugiat
+                license_expiary:
+                  type: string
+                  description: "'license_for_vehicle_category' => ['required', 'string'],."
+                  example: id
+                driving_license:
+                  type: string
+                  format: binary
+                  description: 'Must be a file.'
+                pan_card:
+                  type: string
+                  format: binary
+                  description: 'Must be a file.'
+                aadhar_card:
+                  type: string
+                  format: binary
+                  description: 'Must be a file.'
+              required:
+                - mobile
+                - country
+                - state
+                - district
+                - city_id
+                - pincode
+                - locality
+                - address
+                - license_expiary
+      security: []
+  /api/v1/forgot-password:
+    post:
+      summary: ''
+      operationId: postApiV1ForgotPassword
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'User Authentication'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mobile:
+                  type: string
+                  description: ''
+                  example: numquam
+                email:
+                  type: string
+                  description: '----commented by sandip. Must be a valid email address. Must not be greater than 255 characters.'
+                  example: oreilly.vincent@example.com
+              required:
+                - mobile
+                - email
+      security: []
+  /api/v1/verify-otp:
+    post:
+      summary: 'verifying otp'
+      operationId: verifyingOtp
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'User Authentication'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                otp:
+                  type: string
+                  description: ''
+                  example: quo
+                mobile:
+                  type: string
+                  description: ''
+                  example: fugit
+              required:
+                - otp
+                - mobile
+      security: []
+  /api/v1/verify-otp-customer:
+    post:
+      summary: ''
+      operationId: postApiV1VerifyOtpCustomer
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'User Authentication'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                otp:
+                  type: string
+                  description: ''
+                  example: quia
+                mobile:
+                  type: string
+                  description: ''
+                  example: aut
+              required:
+                - otp
+                - mobile
+      security: []
+  /api/v1/resend-otp:
+    post:
+      summary: 'resend otp'
+      operationId: resendOtp
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'User Authentication'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mobile:
+                  type: string
+                  description: ''
+                  example: excepturi
+              required:
+                - mobile
+      security: []
+  /api/v1/reset-password:
+    post:
+      summary: ''
+      operationId: postApiV1ResetPassword
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'User Authentication'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: "'otp'     => ['required'],   //--commented by sandip."
+                  example: quod
+                password:
+                  type: string
+                  description: 'Must be at least 8 characters.'
+                  example: '{S!n3dG12UdRYv#"'
+              required:
+                - email
+                - password
+      security: []
+  /api/v1/change-password:
+    post:
+      summary: ''
+      operationId: postApiV1ChangePassword
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'User Authentication'
+      security: []
+  /api/v1/update-profile:
+    post:
+      summary: ''
+      operationId: postApiV1UpdateProfile
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - 'User Authentication'
+      security: []
+  /api/v1/wallet-history:
+    get:
+      summary: ''
+      operationId: getApiV1WalletHistory
+      description: ''
+      parameters: []
+      responses:
+        500:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Server Error'
+                properties:
+                  message:
+                    type: string
+                    example: 'Server Error'
+      tags:
+        - 'Wallet History'
+      security: []
+tags:
+  -
+    name: 'Cab Types'
+    description: ''
+  -
+    name: Cabs
+    description: ''
+  -
+    name: City
+    description: ''
+  -
+    name: Endpoints
+    description: ''
+  -
+    name: 'Ratings and Reviews'
+    description: ''
+  -
+    name: State
+    description: ''
+  -
+    name: Trips
+    description: ''
+  -
+    name: 'User Authentication'
+    description: ''
+  -
+    name: 'Wallet History'
+    description: ''

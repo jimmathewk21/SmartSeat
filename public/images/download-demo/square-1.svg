@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080">
+  <rect width="1080" height="1080" fill="#111827"/>
+  <rect x="64" y="64" width="952" height="952" rx="28" fill="#1f2937"/>
+  <text x="120" y="180" fill="#f59e0b" font-family="Arial, sans-serif" font-size="92" font-weight="700">WIPF</text>
+  <text x="360" y="180" fill="#fbbf24" font-family="Arial, sans-serif" font-size="92" font-weight="700">BANGKOK 2022</text>
+  <rect x="132" y="300" width="816" height="420" rx="18" fill="#2563eb"/>
+  <text x="540" y="510" fill="#ffffff" font-family="Arial, sans-serif" font-size="62" font-weight="700" text-anchor="middle">EMINENT SPEAKERS</text>
+  <text x="540" y="860" fill="#ffffff" font-family="Arial, sans-serif" font-size="48" text-anchor="middle">WORLD IP CONFERENCE</text>
+</svg>

@@ -1,0 +1,198 @@
+trigger:
+  branches:
+    include:
+      - master
+      - pipeline
+      - sumanta
+      - email_template
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+
+# =====================================================
+# ====================== PROD ==========================
+# =====================================================
+- stage: Deploy_Prod
+  condition: eq(variables['Build.SourceBranchName'], 'master')
+  variables:
+    - group: Prod-Variables
+
+  jobs:
+    - job: DeployProd
+      displayName: "Deploy to PRODUCTION"
+      steps:
+        - task: DownloadSecureFile@1
+          name: sshKey
+          inputs:
+            secureFile: 'azdo_deploy_key_p'
+
+        - script: |
+            sudo apt-get update -qy
+            sudo apt-get install -y zip unzip rsync openssh-client
+          displayName: 'Install dependencies'
+
+        - script: |
+            set -e
+
+            mkdir -p ~/.ssh
+            chmod 700 ~/.ssh
+
+            cp "$(sshKey.secureFilePath)" ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+
+            echo -e "Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null" > ~/.ssh/config
+            chmod 600 ~/.ssh/config
+          displayName: 'Configure SSH'
+
+        - script: |
+            set -e
+
+            rm -rf web web.zip
+            mkdir -p web
+
+            # Build deploy bundle (exclude server-only paths)
+            rsync -a \
+              --exclude '.env' \
+              --exclude 'storage/' \
+              --exclude 'public/uploads/' \
+              --exclude 'public/storage' \
+              --exclude 'web/' \
+              --exclude 'web.zip' \
+              --exclude '.git/' \
+              ./ web/
+
+            zip -r web.zip web
+          displayName: 'Package Application (exclude .env, storage, uploads)'
+
+        - script: |
+            set -e
+
+            scp web.zip $(username)@$(hostname):~
+
+            ssh $(username)@$(hostname) "
+              set -e
+              sudo mv ~/web.zip $(folderLocation)/
+              cd $(folderLocation)
+
+              sudo unzip -o web.zip
+
+              # Deploy code but NEVER touch server .env / uploads / storage (NO --delete)
+              sudo rsync -a \
+                --exclude '.env' \
+                --exclude 'storage/' \
+                --exclude 'public/uploads/' \
+                --exclude 'public/storage' \
+                web/ .
+
+              sudo chown -R $(folder_owner):$(folder_group) $(folderLocation)
+              # Standard app permissions (exclude writable runtime paths)
+              sudo find $(folderLocation) \
+                -path "$(folderLocation)/storage" -prune -o \
+                -path "$(folderLocation)/bootstrap/cache" -prune -o \
+                -type d -exec chmod 755 {} \;
+              sudo find $(folderLocation) \
+                -path "$(folderLocation)/storage" -prune -o \
+                -path "$(folderLocation)/bootstrap/cache" -prune -o \
+                -type f -exec chmod 644 {} \;
+
+              # Ensure Laravel writable paths are writable by the app user/group
+              sudo mkdir -p storage/framework/{cache,sessions,views} storage/logs bootstrap/cache
+              sudo chown -R $(folder_owner):$(folder_group) storage bootstrap/cache
+              sudo find storage bootstrap/cache -type d -exec chmod 775 {} \;
+              sudo find storage bootstrap/cache -type f -exec chmod 664 {} \;
+
+              sudo -u $(folder_owner) composer install --no-interaction --prefer-dist
+              sudo -u $(folder_owner) php artisan migrate --force
+              sudo -u $(folder_owner) php artisan optimize:clear
+
+              sudo rm -rf web web.zip
+            "
+          displayName: 'Deploy to DEV Server'
+
+
+# =====================================================
+# =================== PRODUCTION =====================
+# =====================================================
+# - stage: Deploy_Prod
+#   condition: eq(variables['Build.SourceBranchName'], 'master')
+#   variables:
+#     - group: Prod-Variables
+
+#   jobs:
+#     - job: DeployProd
+#       displayName: "Deploy to PRODUCTION"
+#       steps:
+#         - task: DownloadSecureFile@1
+#           name: sshKey
+#           inputs:
+#             secureFile: 'azdo_deploy_key'
+
+#         - script: |
+#             sudo apt-get update -qy
+#             sudo apt-get install -y zip unzip rsync openssh-client
+#           displayName: 'Install dependencies'
+
+#         - script: |
+#             set -e
+
+#             mkdir -p ~/.ssh
+#             chmod 700 ~/.ssh
+
+#             cp "$(sshKey.secureFilePath)" ~/.ssh/id_ed25519
+#             chmod 600 ~/.ssh/id_ed25519
+
+#             echo -e "Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null" > ~/.ssh/config
+#             chmod 600 ~/.ssh/config
+#           displayName: 'Configure SSH'
+
+#         - script: |
+#             set -e
+
+#             rm -rf web web.zip
+#             mkdir -p web
+
+#             # Build deploy bundle (exclude server-only paths)
+#             rsync -a \
+#               --exclude '.env' \
+#               --exclude 'storage/' \
+#               --exclude 'public/uploads/' \
+#               --exclude 'public/storage' \
+#               --exclude 'web/' \
+#               --exclude 'web.zip' \
+#               --exclude '.git/' \
+#               ./ web/
+
+#             zip -r web.zip web
+#           displayName: 'Package Application (exclude .env, storage, uploads)'
+
+#         - script: |
+#             set -e
+
+#             scp web.zip $(username)@$(hostname):~
+
+#             ssh $(username)@$(hostname) "
+#               set -e
+#               sudo mv ~/web.zip $(folderLocation)/
+#               cd $(folderLocation)
+
+#               sudo unzip -o web.zip
+
+#               # Deploy code but NEVER touch server .env / uploads / storage (NO --delete)
+#               sudo rsync -a \
+#                 --exclude '.env' \
+#                 --exclude 'storage/' \
+#                 --exclude 'public/uploads/' \
+#                 --exclude 'public/storage' \
+#                 web/ .
+
+#               sudo chown -R $(folder_owner):$(folder_group) $(folderLocation)
+#               sudo chmod -R 755 $(folderLocation)
+
+#               php artisan migrate --force
+#               composer install --no-interaction --prefer-dist
+
+#               sudo rm -rf web web.zip
+#             "
+#           displayName: 'Deploy to Production Server'
