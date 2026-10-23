@@ -51,8 +51,4 @@ class Participant extends Model
         return $this->hasMany(LoginActivity::class);
     }
 
-    public function bookings()
-    {
-        return $this->hasMany(EventBooking::class, 'participant_id');
-    }
 }

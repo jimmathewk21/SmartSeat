@@ -10,20 +10,12 @@ class FrontendPageAccessSettings
     public const SETTING_KEY = 'frontend_page_access';
 
     /** Pages that the "User" role cannot access by default */
-    private const USER_BLOCKED_DEFAULTS = ['world_events', 'my_contacts'];
+    private const USER_BLOCKED_DEFAULTS = ['my_contacts'];
 
     /** Public/basic pages guests can access by default */
     private const GUEST_ALLOWED_DEFAULTS = [
         'home',
         'dynamic_pages',
-        'speakers',
-        'sponsors',
-        'events',
-        'world_events',
-        'venue',
-        'agenda',
-        'attractions',
-        'testimonials',
         'faqs',
         'contact',
         'download',
@@ -34,58 +26,12 @@ class FrontendPageAccessSettings
         return [
             'home' => [
                 'label' => 'Home',
-                'routes' => ['frontend.home', 'frontend.newsletter.store'],
-                'paths' => ['/', 'index.html'],
+                'routes' => ['frontend.trains.home', 'frontend.trains.search', 'frontend.trains.legacy-home', 'frontend.newsletter.store'],
+                'paths' => ['/', 'trains', 'index.html'],
             ],
             'dynamic_pages' => [
                 'label' => 'Dynamic Pages',
                 'routes' => ['frontend.page.show'],
-            ],
-            'speakers' => [
-                'label' => 'Speakers',
-                'routes' => ['frontend.speakers.index', 'frontend.speakers.show'],
-            ],
-            'become_speaker' => [
-                'label' => 'Become Speaker',
-                'routes' => ['frontend.speakers.apply.create', 'frontend.speakers.apply'],
-            ],
-            'sponsors' => [
-                'label' => 'Sponsors',
-                'routes' => ['frontend.sponsors.index', 'frontend.sponsors.show'],
-            ],
-            'events' => [
-                'label' => 'Events',
-                'routes' => ['frontend.events.index', 'frontend.events.show'],
-            ],
-            'world_events' => [
-                'label' => 'World Events',
-                'routes' => ['frontend.world-events.index'],
-            ],
-            'venue' => [
-                'label' => 'Venue / Hotels',
-                'routes' => [
-                    'frontend.venue.index',
-                    'frontend.venue.show',
-                    'frontend.venue.reserve',
-                    'frontend.venue.reserve.store',
-                ],
-                'paths' => ['venue', 'hotel-booking'],
-            ],
-            'event_tickets' => [
-                'label' => 'Event Tickets',
-                'routes' => ['frontend.events.tickets'],
-            ],
-            'agenda' => [
-                'label' => 'Agenda',
-                'routes' => ['frontend.agenda.index'],
-            ],
-            'attractions' => [
-                'label' => 'Attractions / Things To Do',
-                'routes' => ['frontend.attractions.index', 'frontend.attractions.things'],
-            ],
-            'testimonials' => [
-                'label' => 'Testimonials',
-                'routes' => ['frontend.testimonials.index', 'frontend.testimonials.store'],
             ],
             'faqs' => [
                 'label' => 'FAQs',
@@ -102,10 +48,6 @@ class FrontendPageAccessSettings
             'download' => [
                 'label' => 'Download / Media Kit',
                 'routes' => ['frontend.download.index'],
-            ],
-            'become_sponsor' => [
-                'label' => 'Become Sponsor',
-                'routes' => ['frontend.become-sponsor.create', 'frontend.become-sponsor.store'],
             ],
         ];
     }

@@ -81,7 +81,7 @@ class TrainBookingWorkflowTest extends TestCase
     public function test_trip_inventory_initialization_is_idempotent(): void
     {
         [$train, $trip] = $this->makeTrip();
-        $coach = TrainCoach::factory()->for($train)->create(['code' => 'C99']);
+        $coach = TrainCoach::factory()->for($train)->create(['code' => 'EXTRA']);
         TrainSeat::factory()->for($train)->for($coach, 'coach')->create(['number' => '99']);
         $service = app(TrainInventoryService::class);
 

@@ -29,7 +29,7 @@ class NewsletterSubscriptionTest extends TestCase
 
         $this->post(route('frontend.newsletter.store'), [
             'email' => 'subscriber@example.com',
-        ])->assertRedirect(route('frontend.home') . '#section-newsletter');
+        ])->assertRedirect(route('frontend.trains.home'));
 
         $this->assertDatabaseHas('my_contacts', [
             'official_email' => 'subscriber@example.com',

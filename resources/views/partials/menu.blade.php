@@ -75,7 +75,7 @@
         @endcan
 
         @can('setting_access')
-            <li class="c-sidebar-nav-dropdown {{ request()->is('admin/frontend/header*') || request()->is('admin/frontend/home*') || request()->is('admin/frontend/auth-page*') || request()->is('admin/frontend/footer*') || request()->is('admin/frontend/pages*') || request()->is('admin/frontend/page-access*') || request()->is('admin/frontend/seo-titles*') ? 'c-show' : '' }}">
+            <li class="c-sidebar-nav-dropdown {{ request()->is('admin/frontend/header*') || request()->is('admin/frontend/auth-page*') || request()->is('admin/frontend/footer*') || request()->is('admin/frontend/pages*') || request()->is('admin/frontend/page-access*') || request()->is('admin/frontend/seo-titles*') ? 'c-show' : '' }}">
                 <a class="c-sidebar-nav-dropdown-toggle" href="#">
                     <i class="c-sidebar-nav-icon fas fa-window-maximize"></i>
                     Front End
@@ -85,12 +85,6 @@
                         <a href="{{ route('admin.frontend.header.edit') }}" class="c-sidebar-nav-link {{ request()->is('admin/frontend/header*') ? 'c-active' : '' }}">
                             <i class="fa-fw fas fa-heading c-sidebar-nav-icon"></i>
                             Header
-                        </a>
-                    </li>
-                    <li class="c-sidebar-nav-item">
-                        <a href="{{ route('admin.frontend.home.edit') }}" class="c-sidebar-nav-link {{ request()->is('admin/frontend/home*') ? 'c-active' : '' }}">
-                            <i class="fa-fw fas fa-home c-sidebar-nav-icon"></i>
-                            Homepage
                         </a>
                     </li>
                     <li class="c-sidebar-nav-item">
@@ -126,154 +120,6 @@
                 </ul>
             </li>
         @endcan
-
-        @can('speaker_access')
-            <li class="c-sidebar-nav-dropdown {{ request()->is('admin/speakers*') || request()->is('admin/speaker-applications*') ? 'c-show' : '' }}">
-                <a class="c-sidebar-nav-dropdown-toggle" href="#">
-                    <i class="c-sidebar-nav-icon fas fa-microphone"></i>
-                    Speakers
-                </a>
-                <ul class="c-sidebar-nav-dropdown-items">
-                    <li class="c-sidebar-nav-item">
-                        <a href="{{ route('admin.speakers.page-settings.edit') }}" class="c-sidebar-nav-link {{ request()->is('admin/speakers/page-settings*') ? 'c-active' : '' }}">
-                            <i class="c-sidebar-nav-icon fas fa-file-alt"></i>
-                            Speakers Page
-                        </a>
-                    </li>
-                    <li class="c-sidebar-nav-item">
-                        <a href="{{ route('admin.speakers.index') }}" class="c-sidebar-nav-link {{ request()->is('admin/speakers*') ? 'c-active' : '' }}">
-                            <i class="c-sidebar-nav-icon fas fa-user-tie"></i>
-                            Speakers
-                        </a>
-                    </li>
-                    <li class="c-sidebar-nav-item">
-                        <a href="{{ route('admin.speaker-applications.index') }}" class="c-sidebar-nav-link {{ request()->is('admin/speaker-applications*') ? 'c-active' : '' }}">
-                            <i class="c-sidebar-nav-icon fas fa-file-signature"></i>
-                            Speaker Applications
-                        </a>
-                    </li>
-                </ul>
-            </li>
-        @endcan
-
-        @canany(['sponsor_category_access', 'sponsor_access'])
-            <li class="c-sidebar-nav-dropdown {{ request()->is('admin/sponsors/page-settings*') || request()->is('admin/sponsor-categories*') || request()->is('admin/sponsors*') || request()->is('admin/sponsor-inquiries*') ? 'c-show' : '' }}">
-                <a class="c-sidebar-nav-dropdown-toggle" href="#">
-                    <i class="c-sidebar-nav-icon fas fa-handshake"></i>
-                    Sponsors
-                </a>
-                <ul class="c-sidebar-nav-dropdown-items">
-                    @can('sponsor_access')
-                        <li class="c-sidebar-nav-item">
-                            <a href="{{ route('admin.sponsors.page-settings.edit') }}" class="c-sidebar-nav-link {{ request()->is('admin/sponsors/page-settings*') ? 'c-active' : '' }}">
-                                <i class="c-sidebar-nav-icon fas fa-file-alt"></i>
-                                Sponsors Page
-                            </a>
-                        </li>
-                    @endcan
-                    @can('sponsor_category_access')
-                        <li class="c-sidebar-nav-item">
-                            <a href="{{ route('admin.sponsor-categories.index') }}" class="c-sidebar-nav-link {{ request()->is('admin/sponsor-categories*') ? 'c-active' : '' }}">
-                                <i class="c-sidebar-nav-icon fas fa-layer-group"></i>
-                                Sponsor Categories
-                            </a>
-                        </li>
-                    @endcan
-                    @can('sponsor_access')
-                        <li class="c-sidebar-nav-item">
-                            <a href="{{ route('admin.sponsors.index') }}" class="c-sidebar-nav-link {{ request()->is('admin/sponsors*') ? 'c-active' : '' }}">
-                                <i class="c-sidebar-nav-icon fas fa-building"></i>
-                                Sponsors
-                            </a>
-                        </li>
-                        <li class="c-sidebar-nav-item">
-                            <a href="{{ route('admin.sponsor-inquiries.index') }}" class="c-sidebar-nav-link {{ request()->is('admin/sponsor-inquiries*') ? 'c-active' : '' }}">
-                                <i class="c-sidebar-nav-icon fas fa-inbox"></i>
-                                Sponsor Enquiries
-                            </a>
-                        </li>
-                    @endcan
-                </ul>
-            </li>
-        @endcanany
-
-        @can('event_access')
-            <li class="c-sidebar-nav-dropdown {{ request()->is('admin/agenda/*') ? 'c-show' : '' }}">
-                <a class="c-sidebar-nav-dropdown-toggle" href="#">
-                    <i class="c-sidebar-nav-icon fas fa-calendar-alt"></i>
-                    Agenda
-                </a>
-                <ul class="c-sidebar-nav-dropdown-items">
-                    <li class="c-sidebar-nav-item">
-                        <a href="{{ route('admin.agenda.page-settings.edit') }}" class="c-sidebar-nav-link {{ request()->is('admin/agenda/page-settings*') ? 'c-active' : '' }}">
-                            <i class="c-sidebar-nav-icon fas fa-cog"></i>
-                            Agenda Page
-                        </a>
-                    </li>
-                    <li class="c-sidebar-nav-item">
-                        <a href="{{ route('admin.agenda.days.index') }}" class="c-sidebar-nav-link {{ request()->is('admin/agenda/days*') ? 'c-active' : '' }}">
-                            <i class="c-sidebar-nav-icon fas fa-circle"></i>
-                            Agenda Days
-                        </a>
-                    </li>
-                    <li class="c-sidebar-nav-item">
-                        <a href="{{ route('admin.agenda.rooms.index') }}" class="c-sidebar-nav-link {{ request()->is('admin/agenda/rooms*') ? 'c-active' : '' }}">
-                            <i class="c-sidebar-nav-icon fas fa-door-open"></i>
-                            Agenda Rooms
-                        </a>
-                    </li>
-                    <li class="c-sidebar-nav-item">
-                        <a href="{{ route('admin.agenda.items.index') }}" class="c-sidebar-nav-link {{ request()->is('admin/agenda/items*') ? 'c-active' : '' }}">
-                            <i class="c-sidebar-nav-icon fas fa-list"></i>
-                            Agenda Sessions
-                        </a>
-                    </li>
-                </ul>
-            </li>
-        @endcan
-
-        @canany(['ticket_booking_access', 'event_access', 'setting_access'])
-            <li class="c-sidebar-nav-dropdown {{ request()->is('admin/event-bookings*') || request()->is('admin/events*') || request()->is('admin/promo-codes*') || request()->is('admin/settings/ticket-checkout*') ? 'c-show' : '' }}">
-                <a class="c-sidebar-nav-dropdown-toggle" href="#">
-                    <i class="c-sidebar-nav-icon fas fa-ticket-alt"></i>
-                    Buy Ticket
-                </a>
-                <ul class="c-sidebar-nav-dropdown-items">
-                    @can('ticket_booking_access')
-                        <li class="c-sidebar-nav-item">
-                            <a href="{{ route('admin.event-bookings.index') }}" class="c-sidebar-nav-link {{ request()->is('admin/event-bookings*') ? 'c-active' : '' }}">
-                                <i class="c-sidebar-nav-icon fas fa-ticket-alt"></i>
-                                Ticket Bookings
-                            </a>
-                        </li>
-                    @endcan
-                    @can('event_access')
-                        <li class="c-sidebar-nav-item">
-                            <a href="{{ route('admin.events.index') }}" class="c-sidebar-nav-link {{ request()->is('admin/events*') ? 'c-active' : '' }}">
-                                <i class="c-sidebar-nav-icon fas fa-layer-group"></i>
-                                Ticket Packages
-                            </a>
-                        </li>
-                    @endcan
-                    @can('ticket_booking_access')
-                        <li class="c-sidebar-nav-item">
-                            <a href="{{ route('admin.promo-codes.index') }}" class="c-sidebar-nav-link {{ request()->is('admin/promo-codes*') ? 'c-active' : '' }}">
-                                <i class="c-sidebar-nav-icon fas fa-percent"></i>
-                                Promo Code
-                            </a>
-                        </li>
-                    @endcan
-                    @can('setting_access')
-                        <li class="c-sidebar-nav-item">
-                            <a href="{{ route('admin.settings.ticket-checkout.edit') }}" class="c-sidebar-nav-link {{ request()->is('admin/settings/ticket-checkout*') ? 'c-active' : '' }}">
-                                <i class="fa-fw fas fa-credit-card c-sidebar-nav-icon"></i>
-                                Ticket Checkout Settings
-                            </a>
-                        </li>
-                    @endcan
-                </ul>
-            </li>
-        @endcanany
 
         @can('setting_access')
             <li class="c-sidebar-nav-dropdown {{ request()->is('admin/frontend/download*') || request()->is('admin/download-media-items*') ? 'c-show' : '' }}">
@@ -337,38 +183,11 @@
             </li>
         @endcanany
 
-        @can('event_access')
-            <li class="c-sidebar-nav-item">
-                <a href="{{ route('admin.past-upcoming-events.index') }}" class="c-sidebar-nav-link {{ request()->is('admin/past-upcoming-events*') ? 'c-active' : '' }}">
-                    <i class="c-sidebar-nav-icon fas fa-calendar-check"></i>
-                    Past & Upcoming Events
-                </a>
-            </li>
-        @endcan
-
         @can('member_access')
             <li class="c-sidebar-nav-item">
                 <a href="{{ route('admin.members.index') }}" class="c-sidebar-nav-link {{ request()->is('admin/members*') ? 'c-active' : '' }}">
                     <i class="c-sidebar-nav-icon fas fa-user-tie"></i>
                     Members
-                </a>
-            </li>
-        @endcan
-
-        @can('attraction_access')
-            <li class="c-sidebar-nav-item">
-                <a href="{{ route('admin.attractions.index') }}" class="c-sidebar-nav-link {{ request()->is('admin/attractions*') ? 'c-active' : '' }}">
-                    <i class="c-sidebar-nav-icon fas fa-map-marked-alt"></i>
-                    Attractions
-                </a>
-            </li>
-        @endcan
-
-        @can('testimonial_access')
-            <li class="c-sidebar-nav-item">
-                <a href="{{ route('admin.testimonials.index') }}" class="c-sidebar-nav-link {{ request()->is('admin/testimonials*') ? 'c-active' : '' }}">
-                    <i class="c-sidebar-nav-icon fas fa-quote-right"></i>
-                    Testimonials
                 </a>
             </li>
         @endcan
@@ -415,12 +234,6 @@
                     Contact Us
                 </a>
             </li>
-            <li class="c-sidebar-nav-item">
-                <a href="{{ route('admin.frontend.home.edit') }}" class="c-sidebar-nav-link {{ request()->is('admin/frontend/home*') ? 'c-active' : '' }}">
-                    <i class="fa-fw fas fa-newspaper c-sidebar-nav-icon"></i>
-                    Newsletter
-                </a>
-            </li>
         @endcan
 
         @can('detail_access')
@@ -455,58 +268,6 @@
                         </li>
                     @endcan
                 </ul>
-            </li>
-        @endcan
-
-        @can('venue_access')
-            <li class="c-sidebar-nav-dropdown {{ request()->is('admin/venue/page-settings*') || request()->is('admin/venue/reservation-settings*') || request()->is('admin/venue/tax-settings*') || request()->is('admin/venue-hotels*') || request()->is('admin/hotel-bookings*') ? 'c-show' : '' }}">
-                <a class="c-sidebar-nav-dropdown-toggle" href="#">
-                    <i class="fa-fw fas fa-map-marker-alt c-sidebar-nav-icon"></i>
-                    Venue
-                </a>
-                <ul class="c-sidebar-nav-dropdown-items">
-                    <li class="c-sidebar-nav-item">
-                        <a href="{{ route('admin.venue.page-settings.edit') }}" class="c-sidebar-nav-link {{ request()->is('admin/venue/page-settings*') ? 'c-active' : '' }}">
-                            <i class="fa-fw fas fa-file-alt c-sidebar-nav-icon"></i>
-                            Venue Page
-                        </a>
-                    </li>
-                    <li class="c-sidebar-nav-item">
-                        <a href="{{ route('admin.venue.reservation-settings.edit') }}" class="c-sidebar-nav-link {{ request()->is('admin/venue/reservation-settings*') ? 'c-active' : '' }}">
-                            <i class="fa-fw fas fa-clipboard-list c-sidebar-nav-icon"></i>
-                            Reservation Page
-                        </a>
-                    </li>
-                    <li class="c-sidebar-nav-item">
-                        <a href="{{ route('admin.venue.tax-settings.edit') }}" class="c-sidebar-nav-link {{ request()->is('admin/venue/tax-settings*') ? 'c-active' : '' }}">
-                            <i class="fa-fw fas fa-percent c-sidebar-nav-icon"></i>
-                            Tax Option
-                        </a>
-                    </li>
-                    <li class="c-sidebar-nav-item">
-                        <a href="{{ route('admin.venue-hotels.index') }}" class="c-sidebar-nav-link {{ request()->is('admin/venue-hotels*') ? 'c-active' : '' }}">
-                            <i class="fa-fw fas fa-hotel c-sidebar-nav-icon"></i>
-                            Manage Hotels/Rooms
-                        </a>
-                    </li>
-                    @can('hotel_booking_access')
-                        <li class="c-sidebar-nav-item">
-                            <a href="{{ route('admin.hotel-bookings.index') }}" class="c-sidebar-nav-link {{ request()->is('admin/hotel-bookings*') ? 'c-active' : '' }}">
-                                <i class="fa-fw fas fa-bed c-sidebar-nav-icon"></i>
-                                Hotel Bookings
-                            </a>
-                        </li>
-                    @endcan
-                </ul>
-            </li>
-        @endcan
-
-        @can('venue_access')
-            <li class="c-sidebar-nav-item">
-                <a href="{{ route('admin.world-events.index') }}" class="c-sidebar-nav-link {{ request()->is('admin/world-events*') ? 'c-active' : '' }}">
-                    <i class="fa-fw fas fa-globe c-sidebar-nav-icon"></i>
-                    World Events
-                </a>
             </li>
         @endcan
 

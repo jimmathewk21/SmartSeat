@@ -9,10 +9,6 @@ const {
 
 test.setTimeout(60_000);
 
-function promoCodeValue() {
-    return `P${Date.now().toString().slice(-5)}`;
-}
-
 async function setTextareaValue(page, selector, value) {
     await page.locator(selector).evaluate((element, nextValue) => {
         element.value = nextValue;
@@ -20,31 +16,6 @@ async function setTextareaValue(page, selector, value) {
         element.dispatchEvent(new Event('change', { bubbles: true }));
     }, value);
 }
-
-test('admin can create and update a promo code', async ({ page }) => {
-    const code = promoCodeValue();
-    const updatedCode = `${code.slice(0, 5)}Z`;
-
-    await page.goto('/admin/promo-codes/create');
-    await page.locator('input[name="code"]').fill(code);
-    await page.locator('input[name="name"]').fill('Playwright Promo Code');
-    await page.locator('select[name="discount_type"]').selectOption('percentage');
-    await page.locator('input[name="discount_percent"]').fill('15');
-    await page.locator('input[name="max_uses"]').fill('20');
-    await page.getByRole('button', { name: /save/i }).click();
-
-    await expect(page).toHaveURL(/\/admin\/promo-codes$/);
-    await searchTable(page, code);
-    let row = await expectRow(page, code);
-
-    await row.getByRole('link', { name: /edit/i }).click();
-    await page.locator('input[name="code"]').fill(updatedCode);
-    await page.locator('input[name="name"]').fill('Playwright Promo Code Updated');
-    await page.getByRole('button', { name: /save/i }).click();
-
-    await searchTable(page, updatedCode);
-    await expectRow(page, updatedCode);
-});
 
 test('admin can create, update, and delete a frontend page', async ({ page }) => {
     const title = uniqueId('Playwright Info Page');

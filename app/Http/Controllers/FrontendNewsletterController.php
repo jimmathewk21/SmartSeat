@@ -34,7 +34,7 @@ class FrontendNewsletterController extends Controller
         ]);
 
         return redirect()
-            ->to(route('frontend.home') . '#section-newsletter')
+            ->route('frontend.trains.home')
             ->with('newsletter_message', 'Thank you for subscribing to our newsletter.');
     }
 }

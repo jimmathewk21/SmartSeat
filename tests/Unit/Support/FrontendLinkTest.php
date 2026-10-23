@@ -10,7 +10,9 @@ class FrontendLinkTest extends TestCase
     public function test_it_converts_internal_absolute_links_to_relative_paths(): void
     {
         $this->assertSame('/contact-us', FrontendLink::normalize('https://events.innosites.in/contact-us'));
-        $this->assertSame('/speakers/2?tab=bio', FrontendLink::normalize('https://events.innosites.in/speakers/2?tab=bio'));
+        $this->assertSame('/index.html', FrontendLink::normalize('https://events.innosites.in/index.html'));
+        $this->assertSame('/trains?from=Mumbai', FrontendLink::normalize('https://events.innosites.in/trains?from=Mumbai'));
+        $this->assertSame('https://events.innosites.in/speakers/2?tab=bio', FrontendLink::normalize('https://events.innosites.in/speakers/2?tab=bio'));
     }
 
     public function test_it_keeps_external_links_unchanged(): void

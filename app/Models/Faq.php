@@ -49,11 +49,6 @@ class Faq extends Model
         'show_on_homepage' => 'boolean',
     ];
 
-    public function event()
-    {
-        return $this->belongsTo(Event::class, 'event_id');
-    }
-
     public function category()
     {
         return $this->belongsTo(FaqCategory::class, 'faq_category_id');

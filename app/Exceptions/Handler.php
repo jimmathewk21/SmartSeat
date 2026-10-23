@@ -59,7 +59,7 @@ class Handler extends ExceptionHandler
                 return parent::render($request, $e);
             }
 
-            return redirect()->route('frontend.home');
+            return redirect()->route('frontend.trains.home');
         }
 
         return parent::render($request, $e);

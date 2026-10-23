@@ -69,7 +69,7 @@ class TrainOwnerAuthorizationTest extends TestCase
         $this->assertAuthenticatedAs($owner);
         $this->assertTrue(session('train_owner_session'));
         $this->get(route('train-owner.trains.index'))->assertOk();
-        $this->get(route('my-tickets.index'))->assertRedirect(route('train-owner.login'));
+        $this->get(route('frontend.trains.bookings'))->assertRedirect(route('train-owner.login'));
         $this->assertGuest();
     }
 

@@ -2,11 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\EventBooking;
-use App\Models\HotelBooking;
 use App\Models\LoginActivity;
-use App\Models\SpeakerApplication;
-use App\Models\SponsorInquiry;
 use App\Models\User;
 use App\Support\PaymentGatewaySettings;
 use App\Support\TicketFxSettings;
@@ -63,48 +59,6 @@ class HomeController
                 ->get()
             : collect();
 
-        $ticketBookings = Gate::allows('ticket_booking_access')
-            ? EventBooking::query()
-                ->with(['user:id,name,email'])
-                ->select([
-                    'id',
-                    'booking_code',
-                    'user_id',
-                    'display_currency',
-                    'display_total_amount_minor',
-                    'total_amount_paise',
-                    'status',
-                    'created_at',
-                ])
-                ->orderByDesc('id')
-                ->limit(5)
-                ->get()
-            : collect();
-
-        $hotelBookings = Gate::allows('hotel_booking_access')
-            ? HotelBooking::query()
-                ->select(['id', 'booking_code', 'full_name', 'email', 'hotel_name', 'room_name', 'total_inr', 'created_at'])
-                ->orderByDesc('id')
-                ->limit(5)
-                ->get()
-            : collect();
-
-        $speakerApplications = Gate::allows('speaker_access')
-            ? SpeakerApplication::query()
-                ->select(['id', 'full_name', 'official_email', 'organization', 'status', 'created_at'])
-                ->orderByDesc('id')
-                ->limit(5)
-                ->get()
-            : collect();
-
-        $sponsorInquiries = Gate::allows('sponsor_access')
-            ? SponsorInquiry::query()
-                ->select(['id', 'name', 'email', 'company_name', 'category', 'created_at'])
-                ->orderByDesc('id')
-                ->limit(5)
-                ->get()
-            : collect();
-
         return view('home', compact(
             'paymentGatewayEnabled',
             'paymentGatewayConfigured',
@@ -113,10 +67,6 @@ class HomeController
             'fxLastUpdatedAt',
             'newUserLogins',
             'userActivities',
-            'ticketBookings',
-            'hotelBookings',
-            'speakerApplications',
-            'sponsorInquiries',
         ));
     }
 

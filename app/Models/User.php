@@ -133,11 +133,6 @@ class User extends Authenticatable
         return $this->hasMany(Project::class, 'client_id');
     }
 
-    public function bookings()
-    {
-        return $this->hasMany(EventBooking::class, 'user_id');
-    }
-
     public function trainBookings()
     {
         return $this->hasMany(TrainBooking::class, 'user_id');

@@ -91,7 +91,7 @@ class ParticipantRegistrationAndLoginActivityTest extends TestCase
                 'email' => $user->email,
                 'password' => 'secret123',
             ])
-            ->assertRedirect(route('frontend.home'));
+            ->assertRedirect(route('frontend.trains.home'));
 
         $this->assertAuthenticatedAs($user);
 
@@ -197,7 +197,7 @@ class ParticipantRegistrationAndLoginActivityTest extends TestCase
             'verification_status' => false,
         ])->save();
 
-        $this->get(route('frontend.home'))
+        $this->get(route('frontend.trains.home'))
             ->assertRedirect(route('login'))
             ->assertSessionHas('auth_notice_title', 'Access Revoked')
             ->assertSessionHas('pending_review_message');

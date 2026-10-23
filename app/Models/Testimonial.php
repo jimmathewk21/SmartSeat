@@ -65,11 +65,6 @@ class Testimonial extends Model
         return $date->format('Y-m-d H:i:s');
     }
 
-    public function event()
-    {
-        return $this->belongsTo(Event::class, 'event_id');
-    }
-
     public function country()
     {
         return $this->belongsTo(Country::class, 'country_id');

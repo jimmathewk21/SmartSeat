@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Event;
 use App\Models\Faq;
 use App\Models\FaqCategory;
 use Illuminate\Database\Seeder;
@@ -11,50 +10,26 @@ class FaqDemoSeeder extends Seeder
 {
     public function run(): void
     {
-        $categories = [
-            ['name' => 'Registration', 'is_active' => true, 'sort_order' => 1],
-            ['name' => 'Payments', 'is_active' => true, 'sort_order' => 2],
-            ['name' => 'Event Access', 'is_active' => true, 'sort_order' => 3],
-        ];
-
-        $categoryModels = [];
-        foreach ($categories as $category) {
-            $categoryModels[$category['name']] = FaqCategory::query()->updateOrCreate(
-                ['name' => $category['name']],
-                $category
-            );
-        }
-
-        $event = Event::query()->where('slug', 'ai-leadership-summit-2026')->first();
+        $category = FaqCategory::query()->updateOrCreate(
+            ['name' => 'Train Booking'],
+            ['is_active' => true, 'sort_order' => 1]
+        );
 
         $faqs = [
             [
-                'faq_category_id' => $categoryModels['Registration']->id,
-                'question' => 'Can I register multiple delegates in one booking?',
-                'answer' => 'Yes. The ticket flow supports multiple delegates and plan quantities in a single booking.',
+                'question' => 'How do I search for a train?',
+                'answer' => 'Choose your origin, destination, and travel date, then submit the search to view available trips.',
                 'sort_order' => 1,
-                'show_on_homepage' => true,
             ],
             [
-                'faq_category_id' => $categoryModels['Payments']->id,
-                'question' => 'Which currency is used for payments?',
-                'answer' => 'All payments are processed in INR through Razorpay. Display prices can still be shown in INR or USD depending on the checkout flow.',
+                'question' => 'How can I view my train bookings?',
+                'answer' => 'Sign in with your passenger account and open My Train Bookings to view your reservations.',
                 'sort_order' => 2,
-                'show_on_homepage' => true,
             ],
             [
-                'faq_category_id' => $categoryModels['Event Access']->id,
-                'question' => 'How do I find my ticket after payment?',
-                'answer' => 'Once payment is verified, the booking is marked paid and the ticket appears in My Tickets for the logged-in user.',
+                'question' => 'Can I cancel a train booking?',
+                'answer' => 'Open the booking from My Train Bookings and use the cancellation option when it is available.',
                 'sort_order' => 3,
-                'show_on_homepage' => true,
-            ],
-            [
-                'faq_category_id' => $categoryModels['Event Access']->id,
-                'question' => 'Can I browse the demo event content locally?',
-                'answer' => 'Yes. The demo seeders populate agenda sessions, speakers, sponsors, testimonials, downloads, and related event content for local browsing.',
-                'sort_order' => 4,
-                'show_on_homepage' => false,
             ],
         ];
 
@@ -62,8 +37,9 @@ class FaqDemoSeeder extends Seeder
             Faq::query()->updateOrCreate(
                 ['question' => $faq['question']],
                 array_merge($faq, [
-                    'event_id' => $event?->id,
+                    'faq_category_id' => $category->id,
                     'is_active' => true,
+                    'show_on_homepage' => false,
                 ])
             );
         }
