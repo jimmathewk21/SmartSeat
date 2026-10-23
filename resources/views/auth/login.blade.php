@@ -7,12 +7,9 @@
         $siteIcon = $resolvedSiteMeta['site_icon'] ?? 'images/icon.webp';
         $isAbsoluteIcon = str_starts_with($siteIcon, 'http://') || str_starts_with($siteIcon, 'https://') || str_starts_with($siteIcon, '//') || str_starts_with($siteIcon, '/');
         $siteIconHref = $isAbsoluteIcon ? $siteIcon : asset($siteIcon);
-        $brandImage = $authPageSettings['brand_image_url'] ?? 'images/logo.webp';
-        $isAbsoluteBrandImage = str_starts_with($brandImage, 'http://') || str_starts_with($brandImage, 'https://') || str_starts_with($brandImage, '//') || str_starts_with($brandImage, '/');
-        $brandImageSrc = $isAbsoluteBrandImage ? $brandImage : asset($brandImage);
         $currentIpAddress = request()->getClientIp() ?: request()->ip() ?: '127.0.0.1';
     @endphp
-    <title>{{ $frontendSeoTitle ?? 'Sign In - ' . trans('panel.site_title') }}</title>
+    <title>Sign In | SmartSeat</title>
     <link rel="icon" href="{{ $siteIconHref }}" type="image/gif" sizes="16x16">
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -69,12 +66,7 @@
             padding: 28px 20px 24px 0;
             z-index: 1;
         }
-        .login-brand {
-            max-width: 390px;
-            width: 100%;
-            display: block;
-            margin: 0 0 2px;
-        }
+        .login-brand { display:block; margin:0 0 12px; color:#103e38; font-size:42px; font-weight:800; letter-spacing:-.04em; line-height:1.1; }
         .login-copy {
             max-width: 640px;
             color: #101116;
@@ -439,14 +431,10 @@
             <div class="row login-layout">
                 <div class="col-xl-6 col-lg-6">
                     <div class="login-info">
-                        <img src="{{ $brandImageSrc }}" alt="{{ trans('panel.site_title') }}" class="login-brand">
+                        <div class="login-brand">SmartSeat</div>
 
                         <div class="login-copy">
-                            @foreach(preg_split("/\\r\\n\\r\\n|\\n\\n|\\r\\r/", trim((string) ($authPageSettings['login_left_content'] ?? ''))) as $paragraph)
-                                @if(trim($paragraph) !== '')
-                                    <p>{{ trim($paragraph) }}</p>
-                                @endif
-                            @endforeach
+                            <p>Sign in to continue to your SmartSeat account and manage your train journeys.</p>
                         </div>
 
                         <div class="login-meta login-meta-below mt-4 login-meta--single">
@@ -463,8 +451,8 @@
                         <div class="login-card-stack">
                         <div class="login-card">
                             <div class="login-card-header">
-                                <h1>{{ $authPageSettings['login_form_title'] }}</h1>
-                                <span class="login-card-header-badge">{{ $authPageSettings['login_form_subtitle'] }}</span>
+                                <h1>Welcome back</h1>
+                                <span class="login-card-header-badge">Sign in to manage your account.</span>
                             </div>
                             <div class="login-card-body">
                                 @if(session('message'))
@@ -510,7 +498,7 @@
 
                                     <div class="login-form-footer">
                                         <button type="submit" class="btn-main fx-slide login-submit">
-                                            <span>{{ $authPageSettings['login_button_text'] }}</span>
+                                            <span>Sign In</span>
                                         </button>
 
                                         <div class="login-links">

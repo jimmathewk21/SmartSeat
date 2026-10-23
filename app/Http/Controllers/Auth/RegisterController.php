@@ -32,7 +32,7 @@ class RegisterController extends Controller
     use RegistersUsers;
 
     private const PENDING_APPROVAL_TITLE = 'Registration Submitted';
-    private const PENDING_APPROVAL_MESSAGE = 'Thank you for sharing your details. We are currently reviewing the information you provided. Once verified, your account will be activated, and you will receive a confirmation email. For any assistance or support you can reach us at info@igisummit.com';
+    private const PENDING_APPROVAL_MESSAGE = 'Thank you for sharing your details. We are reviewing the information you provided. If you need help, please contact SmartSeat support.';
 
     /**
      * Create a new controller instance.

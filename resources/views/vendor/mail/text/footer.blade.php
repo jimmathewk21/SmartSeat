@@ -1,1 +1,1 @@
-IGI Summit
+SmartSeat

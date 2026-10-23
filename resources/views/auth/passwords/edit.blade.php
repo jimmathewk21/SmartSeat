@@ -6,7 +6,7 @@
         $isAbsoluteIcon = str_starts_with($siteIcon, 'http://') || str_starts_with($siteIcon, 'https://') || str_starts_with($siteIcon, '//') || str_starts_with($siteIcon, '/');
         $siteIconHref = $isAbsoluteIcon ? $siteIcon : asset($siteIcon);
     @endphp
-    <title>{{ $frontendSeoTitle ?? 'My Profile - ' . trans('panel.site_title') }}</title>
+    <title>My Profile | SmartSeat</title>
     <link rel="icon" href="{{ $siteIconHref }}" type="image/gif" sizes="16x16">
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -16,12 +16,13 @@
     <link id="colors" href="{{ asset('css/colors/scheme-01.css') }}" rel="stylesheet" type="text/css">
     <style>
         body.profile-frontend-page { background:#eef1f8; color:#111; }
-        .profile-section { padding:120px 0 100px; }
+        .profile-section { padding:72px 0 48px; }
         .profile-card { background:#fff; border:1px solid #dde3f1; border-radius:14px; box-shadow:0 18px 45px rgba(17, 24, 39, 0.08); overflow:hidden; height:100%; }
         .profile-card-header { background:linear-gradient(90deg, #151a56 0%, #2f2a80 100%); color:#fff; padding:20px 24px; font-size:24px; font-weight:700; }
         .profile-card-body { padding:24px; }
         .profile-card .form-control { border-radius:8px; min-height:48px; border:1px solid #d8deea; }
         .profile-card label { font-weight:600; margin-bottom:7px; }
+        @media (max-width:767px) { .profile-section { padding:42px 0 32px; } .profile-card-header { padding:16px 18px; font-size:20px; } .profile-card-body { padding:18px; } }
     </style>
 </head>
 <body class="profile-frontend-page">

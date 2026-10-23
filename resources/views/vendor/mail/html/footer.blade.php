@@ -4,7 +4,7 @@
 <tr>
 <td class="content-cell" align="center">
 <div style="font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 6px;">
-    IGI Summit
+    SmartSeat
 </div>
 {{ Illuminate\Mail\Markdown::parse($slot) }}
 </td>

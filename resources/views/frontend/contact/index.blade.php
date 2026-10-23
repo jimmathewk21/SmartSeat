@@ -109,9 +109,9 @@
 
             <div class="contact-layout">
                 <div class="contact-info-block">
-                    <div class="contact-organizer-heading">{{ $settings['organizer_heading'] ?? 'Organised by:' }}</div>
-                    <img class="contact-organizer-logo" src="{{ $assetHref($settings['organizer_logo_url'] ?? 'images/logo.webp') }}" alt="Organizer logo">
+                    <div class="contact-organizer-heading">SmartSeat Support</div>
 
+                    @if(trim((string) ($settings['address_text'] ?? '')) !== '')
                     <div class="contact-info-card">
                         <div class="contact-info-iconline">
                             <div class="contact-info-icon"><i class="fa fa-map-marker-alt"></i></div>
@@ -121,16 +121,19 @@
                             </div>
                         </div>
                     </div>
+                    @endif
 
+                    @if(trim((string) ($settings['contact_email'] ?? '')) !== '' || trim((string) ($settings['contact_phone'] ?? '')) !== '')
                     <div class="contact-info-card">
                         <div class="contact-info-iconline">
                             <div class="contact-info-icon"><i class="fa fa-envelope-open"></i></div>
                             <div>
                                 <div class="contact-info-heading">{{ $settings['contact_heading'] ?? 'Contact Details:' }}</div>
-                                <div class="contact-info-text">Email: {{ $settings['contact_email'] ?? '' }}{{ PHP_EOL }}Mobile: {{ $settings['contact_phone'] ?? '' }}</div>
+                                <div class="contact-info-text">@if(trim((string) ($settings['contact_email'] ?? '')) !== '')Email: {{ $settings['contact_email'] }}@endif@if(trim((string) ($settings['contact_phone'] ?? '')) !== ''){{ PHP_EOL }}Mobile: {{ $settings['contact_phone'] }}@endif</div>
                             </div>
                         </div>
                     </div>
+                    @endif
 
                     <div class="contact-info-card">
                         <div class="contact-info-iconline">

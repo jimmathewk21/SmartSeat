@@ -20,6 +20,9 @@ class EnsureApprovedParticipantSession
         'frontend.trains.waitlist',
         'frontend.trains.cancel',
         'frontend.trains.waitlist.cancel',
+        'profile.password.edit',
+        'profile.password.update',
+        'profile.password.updateProfile',
     ];
 
     public function handle(Request $request, Closure $next)

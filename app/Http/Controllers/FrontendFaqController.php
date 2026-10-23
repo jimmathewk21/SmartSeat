@@ -63,7 +63,7 @@ class FrontendFaqController extends Controller
             . '<p>Thank you for submitting your question on the FAQ page.</p>'
             . '<p>Our team has received it and will respond shortly.</p>'
             . '<p><strong>Your Question:</strong><br>' . nl2br(e((string) $validated['question'])) . '</p>'
-            . '<p>Regards,<br>IGI Summit Team</p>';
+            . '<p>Regards,<br>SmartSeat Support</p>';
         try {
             Mail::to((string) $validated['email'])->queue(new HtmlBodyMail($subject, $body));
         } catch (Throwable $exception) {

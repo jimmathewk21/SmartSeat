@@ -24,16 +24,10 @@
                 @endauth
             </nav>
 
-            <section class="smartseat-footer-column" aria-labelledby="smartseat-footer-jyrc-title">
-                <h2 id="smartseat-footer-jyrc-title">JYRC</h2>
-                <p class="smartseat-footer-company">Jim &amp; Yatin Railway Cooperation</p>
-                <p>Building a smarter railway booking experience.</p>
-            </section>
-
         </div>
 
         <div class="smartseat-footer-bottom">
-            <p>&copy; 2026 JYRC &mdash; Jim &amp; Yatin Railway Cooperation. All rights reserved.</p>
+            <p>&copy; {{ now()->year }} SmartSeat. All rights reserved.</p>
             <p>SmartSeat Train Booking System</p>
         </div>
     </div>

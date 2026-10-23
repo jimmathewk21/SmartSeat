@@ -8,8 +8,8 @@
 
     <div class="c-sidebar-brand d-md-down-none">
         <a class="c-sidebar-brand-full brand-lockup" href="{{ route('admin.home') }}">
-            <span class="brand-mark">I</span>
-            <span class="brand-title">IGI SUMMIT</span>
+            <span class="brand-mark">S</span>
+            <span class="brand-title">SmartSeat</span>
         </a>
     </div>
 

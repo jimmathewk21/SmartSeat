@@ -7,12 +7,9 @@
         $siteIcon = $resolvedSiteMeta['site_icon'] ?? 'images/icon.webp';
         $isAbsoluteIcon = str_starts_with($siteIcon, 'http://') || str_starts_with($siteIcon, 'https://') || str_starts_with($siteIcon, '//') || str_starts_with($siteIcon, '/');
         $siteIconHref = $isAbsoluteIcon ? $siteIcon : asset($siteIcon);
-        $brandImage = $authPageSettings['brand_image_url'] ?? 'images/logo.webp';
-        $isAbsoluteBrandImage = str_starts_with($brandImage, 'http://') || str_starts_with($brandImage, 'https://') || str_starts_with($brandImage, '//') || str_starts_with($brandImage, '/');
-        $brandImageSrc = $isAbsoluteBrandImage ? $brandImage : asset($brandImage);
         $currentIpAddress = request()->getClientIp() ?: request()->ip() ?: '127.0.0.1';
     @endphp
-    <title>{{ $frontendSeoTitle ?? 'Sign Up - ' . trans('panel.site_title') }}</title>
+    <title>Register | SmartSeat</title>
     <link rel="icon" href="{{ $siteIconHref }}" type="image/gif" sizes="16x16">
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -71,12 +68,7 @@
             padding: 28px 20px 24px 0;
             z-index: 1;
         }
-        .signup-brand {
-            max-width: 390px;
-            width: 100%;
-            display: block;
-            margin: 0 0 2px;
-        }
+        .signup-brand { display:block; margin:0 0 12px; color:#103e38; font-size:42px; font-weight:800; letter-spacing:-.04em; line-height:1.1; }
         .signup-copy {
             max-width: 640px;
             color: #101116;
@@ -397,19 +389,15 @@
             <div class="row signup-layout">
                 <div class="col-xl-6 col-lg-6">
                     <div class="signup-info">
-                        <img src="{{ $brandImageSrc }}" alt="{{ trans('panel.site_title') }}" class="signup-brand">
+                        <div class="signup-brand">SmartSeat</div>
 
                         <div class="signup-copy">
                             <div class="signup-copy-block">
-                                @foreach(preg_split("/\\r\\n\\r\\n|\\n\\n|\\r\\r/", trim((string) ($authPageSettings['signup_left_content'] ?? ''))) as $paragraph)
-                                    @if(trim($paragraph) !== '')
-                                        <p class="signup-copy-text">{{ trim($paragraph) }}</p>
-                                    @endif
-                                @endforeach
+                                <p class="signup-copy-text">Create a SmartSeat account to manage your railway travel details.</p>
                             </div>
 
                             <div class="signup-note-banner">
-                                <strong>NOTE:</strong> {{ $authPageSettings['verification_note'] ?? '' }}
+                                <strong>NOTE:</strong> Some account features may require review.
                             </div>
                         </div>
 
@@ -420,8 +408,8 @@
                     <div class="signup-card-wrap">
                         <div class="signup-card">
                             <div class="signup-card-header">
-                                <h1>{{ $authPageSettings['signup_form_title'] }}</h1>
-                                <span class="signup-card-header-badge">{{ $authPageSettings['signup_form_subtitle'] }}</span>
+                                <h1>Create your account</h1>
+                                <span class="signup-card-header-badge">Join SmartSeat to manage your account.</span>
                             </div>
                             <div class="signup-card-body">
                                 <form method="POST" action="{{ route('register') }}">
@@ -492,7 +480,7 @@
 
                                     <div class="signup-form-footer">
                                         <button type="submit" class="btn-main fx-slide signup-submit">
-                                            <span>{{ $authPageSettings['signup_button_text'] }}</span>
+                                            <span>Register</span>
                                         </button>
 
                                         <div class="signup-links">

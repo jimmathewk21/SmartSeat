@@ -37,7 +37,7 @@
                 <i class="fas fa-fw fa-bars"></i>
             </button>
 
-            <a class="c-header-brand d-lg-none" href="{{ route('admin.home') }}">IGI SUMMIT</a>
+            <a class="c-header-brand d-lg-none" href="{{ route('admin.home') }}">SmartSeat</a>
 
             <button class="c-header-toggler mfs-3 d-md-down-none" type="button" responsive="true">
                 <i class="fas fa-fw fa-bars"></i>

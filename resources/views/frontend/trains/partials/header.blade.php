@@ -1,3 +1,8 @@
+@php
+    $isTrainPassenger = auth()->check()
+        && (bool) auth()->user()->participant?->train_access_enabled;
+@endphp
+
 <header class="train-site-header">
     <div class="train-container train-site-header-inner">
         <a class="train-site-brand" href="{{ route('frontend.trains.home') }}" aria-label="SmartSeat Rail home">
@@ -12,12 +17,17 @@
 
         <nav class="train-site-nav" aria-label="Train booking">
             <a href="{{ route('frontend.trains.home') }}">Find trains</a>
-            @auth
-                <a class="train-site-nav-action" href="{{ route('frontend.trains.bookings') }}">My bookings</a>
-            @else
-                <a href="{{ route('frontend.trains.login') }}">Sign in</a>
-                <a class="train-site-nav-action" href="{{ route('frontend.trains.register') }}">Create account</a>
-            @endauth
+            @if($isTrainPassenger)
+                <a class="train-site-nav-action" href="{{ route('frontend.trains.bookings') }}">My Bookings</a>
+                <a href="{{ route('profile.password.edit') }}">Profile</a>
+                <form class="train-site-nav-form" method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit">Sign Out</button>
+                </form>
+            @elseif(auth()->guest())
+                <a href="{{ route('frontend.trains.login') }}">Sign In</a>
+                <a class="train-site-nav-action" href="{{ route('frontend.trains.register') }}">Register</a>
+            @endif
         </nav>
     </div>
 </header>

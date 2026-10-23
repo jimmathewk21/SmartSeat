@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>My Train Bookings</title>
+    <title>My Train Bookings | SmartSeat</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/vendors.css') }}" rel="stylesheet">
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
     <link href="{{ asset('css/train-search.css') }}" rel="stylesheet">
-    <style>.train-bookings-wrap{max-width:1000px;margin:0 auto;padding:40px 16px 72px}.booking-card{border:1px solid #e5e9f2;border-radius:12px;background:#fff;padding:20px;margin:16px 0}.seat-badge{display:inline-block;background:#f0f3f8;border-radius:6px;padding:5px 9px;margin:3px}</style>
+    <style>.train-bookings-wrap{max-width:1000px;margin:0 auto;padding:28px 16px 48px}.booking-card{border:1px solid #e5e9f2;border-radius:12px;background:#fff;padding:20px;margin:16px 0}.seat-badge{display:inline-block;background:#f0f3f8;border-radius:6px;padding:5px 9px;margin:3px}@media(max-width:575px){.train-bookings-wrap{padding:20px 14px 36px}.booking-card{padding:15px}}</style>
 </head>
 <body style="background:#f6f8fc;color:#172033">
 <div id="wrapper">
-    @include('frontend.partials.header')
+    @include('frontend.trains.partials.header')
     <main class="train-bookings-wrap">
         <h1 class="mb-3">My train bookings</h1>
         @if(session('message')) <div class="alert alert-success">{{ session('message') }}</div> @endif

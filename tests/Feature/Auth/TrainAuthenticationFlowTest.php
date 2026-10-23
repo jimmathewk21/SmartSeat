@@ -131,7 +131,8 @@ class TrainAuthenticationFlowTest extends TestCase
             ->assertOk()
             ->assertSee('Registration Submitted')
             ->assertSee('pendingReviewModal')
-            ->assertSee('conference');
+            ->assertSee('SmartSeat')
+            ->assertDontSee('igisummit.com');
     }
 
     public function test_train_registration_uses_the_existing_registration_post_route(): void
@@ -230,7 +231,8 @@ class TrainAuthenticationFlowTest extends TestCase
             ->assertOk()
             ->assertSee('Registration Submitted')
             ->assertSee('pendingReviewModal')
-            ->assertSee('conference');
+            ->assertSee('SmartSeat')
+            ->assertDontSee('igisummit.com');
     }
 
     private function station(string $label): Station

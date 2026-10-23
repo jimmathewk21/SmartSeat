@@ -1,1 +1,1 @@
-IGI Summit: {{ $url }}
+SmartSeat: {{ $url }}

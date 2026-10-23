@@ -1,37 +1,10 @@
 @php
-    $logo = $frontendHeader['logo_url'] ?? 'images/logo.webp';
-    $isAbsoluteLogo = str_starts_with($logo, 'http://') || str_starts_with($logo, 'https://') || str_starts_with($logo, '//') || str_starts_with($logo, '/');
-    $logoSrc = $isAbsoluteLogo ? $logo : asset($logo);
-    $menuItems = collect($frontendHeader['menu_items'] ?? []);
-    $hasTrainItem = $menuItems->contains(function ($item) {
-        $link = trim((string) ($item['link'] ?? ''));
-
-        return $link === '/trains' || $link === route('frontend.trains.search');
-    });
-
-    if (! $hasTrainItem) {
-        $menuItems->push([
-            'name' => 'Train Booking',
-            'link' => route('frontend.trains.search'),
-        ]);
-    }
-
-    if (auth()->check() && ! $menuItems->contains(fn ($item) => trim((string) ($item['link'] ?? '')) === route('frontend.trains.bookings'))) {
-        $menuItems->push([
-            'name' => 'My Train Bookings',
-            'link' => route('frontend.trains.bookings'),
-        ]);
-    }
-
-    $menuItems = $menuItems->values()->all();
-    $buttonText = $frontendHeader['button_text'] ?? 'Buy Tickets';
-    $buttonLink = $frontendHeader['button_link'] ?? '#section-tickets';
-    $currentPath = request()->path();
-    $isHomeRoute = request()->routeIs('frontend.trains.home') || $currentPath === '/' || $currentPath === 'index.html';
-    $headerInlineStyle = $isHomeRoute ? '' : 'background:#000 !important;';
+    $isTrainPassenger = auth()->check()
+        && (bool) auth()->user()->participant?->train_access_enabled;
+    $headerInlineStyle = 'background:#103e38 !important;';
 @endphp
 
-<header class="transparent" style="{{ $headerInlineStyle }}">
+<header class="transparent smartseat-public-header" style="{{ $headerInlineStyle }}">
     <style>
         .header-right-actions {
             display: flex;
@@ -177,6 +150,28 @@
             width: 100%;
             max-width: 1680px;
         }
+        .smartseat-public-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff !important;
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -.03em;
+            text-decoration: none !important;
+            white-space: nowrap;
+        }
+        .smartseat-public-brand-mark {
+            display: grid;
+            width: 38px;
+            height: 38px;
+            place-items: center;
+            border: 1px solid rgba(255,255,255,.35);
+            border-radius: 10px;
+            color: #d5ed99;
+        }
+        .smartseat-public-brand-mark svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+        .smartseat-public-header .header-right-actions { flex-wrap: wrap; }
         @media (min-width: 992px) {
             .de-flex {
                 align-items: center;
@@ -311,6 +306,7 @@
             }
         }
         @media (max-width: 767px) {
+            .smartseat-public-header .header-right-actions { max-width: 100%; }
             .header-right-actions {
                 gap: 6px;
             }
@@ -344,10 +340,11 @@
                 <div class="de-flex">
                     <div class="de-flex-col">
                         <div id="logo">
-                            <a href="{{ route('frontend.trains.home') }}">
-                                <img class="logo-main" src="{{ $logoSrc }}" alt="">
-                                <img class="logo-scroll" src="{{ $logoSrc }}" alt="">
-                                <img class="logo-mobile" src="{{ $logoSrc }}" alt="">
+                            <a class="smartseat-public-brand" href="{{ route('frontend.trains.home') }}" aria-label="SmartSeat home">
+                                <span class="smartseat-public-brand-mark" aria-hidden="true">
+                                    <svg viewBox="0 0 32 32" focusable="false"><path d="M9 4h14a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4Zm-4 11h22M10 9h4m4 0h4M10 28l3-4m9 4-3-4"/><circle cx="11" cy="19" r="1.5"/><circle cx="21" cy="19" r="1.5"/></svg>
+                                </span>
+                                <span>SmartSeat</span>
                             </a>
                         </div>
                     </div>
@@ -355,12 +352,13 @@
                     <div class="de-flex-col">
                         <div class="de-flex-col header-col-mid">
                             <ul id="mainmenu">
-                                @foreach($menuItems as $item)
-                                    <li>
-                                        @php($menuLink = trim((string) ($item['link'] ?? '')) === '/' ? route('frontend.trains.home') : $item['link'])
-                                        <a class="menu-item" href="{{ $menuLink }}">{{ $item['name'] }}</a>
-                                    </li>
-                                @endforeach
+                                <li><a class="menu-item" href="{{ route('frontend.trains.home') }}">Find Trains</a></li>
+                                @if($isTrainPassenger)
+                                    <li><a class="menu-item" href="{{ route('frontend.trains.bookings') }}">My Bookings</a></li>
+                                @else
+                                    <li><a class="menu-item" href="{{ route('frontend.faqs.index') }}">FAQs</a></li>
+                                    <li><a class="menu-item" href="{{ route('frontend.contact.index') }}">Contact</a></li>
+                                @endif
                             </ul>
                         </div>
                     </div>
@@ -370,26 +368,20 @@
                             <div class="header-translate-wrap" aria-label="Website language switcher">
                                 <div id="google_translate_element"></div>
                             </div>
-                            @guest
+                            @if(! $isTrainPassenger && auth()->guest())
                                 <div class="header-auth-actions">
-                                    @if (Route::has('register'))
-                                        <a class="header-auth-btn header-auth-btn-signup" href="{{ route('register') }}">Sign Up</a>
-                                    @endif
+                                    <a class="header-auth-btn header-auth-btn-login" href="{{ route('frontend.trains.login') }}">Sign In</a>
+                                    <a class="header-auth-btn header-auth-btn-signup" href="{{ route('frontend.trains.register') }}">Register</a>
                                 </div>
-                            @else
+                            @elseif($isTrainPassenger)
                                 <div class="header-auth-actions">
-                                    <a class="header-user-chip" href="{{ route('profile.password.edit') }}" title="{{ auth()->user()->name }}">
-                                        <i class="fas fa-user-circle"></i>
-                                        <span>{{ auth()->user()->name }}</span>
-                                    </a>
+                                    <a class="header-auth-btn header-auth-btn-login" href="{{ route('profile.password.edit') }}">Profile</a>
                                     <form class="header-auth-form" method="POST" action="{{ route('logout') }}">
                                         @csrf
                                         <button class="header-auth-btn header-auth-btn-login" type="submit">Sign Out</button>
                                     </form>
                                 </div>
-                            @endguest
-
-                            <a class="btn-main fx-slide" href="{{ $buttonLink }}"><span>{{ $buttonText }}</span></a>
+                            @endif
                         </div>
 
                         <div class="menu_side_area">

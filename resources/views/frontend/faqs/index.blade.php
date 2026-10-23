@@ -12,7 +12,7 @@
     <link rel="icon" href="{{ $siteIconHref }}" type="image/gif" sizes="16x16">
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="AIvent" name="description">
+    <meta content="SmartSeat railway booking support and frequently asked questions." name="description">
     <meta content="" name="keywords">
     <meta content="" name="author">
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" id="bootstrap">

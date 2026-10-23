@@ -4,6 +4,7 @@ namespace Tests\Feature\Frontend;
 
 use App\Models\Participant;
 use App\Models\Role;
+use App\Models\Setting;
 use App\Models\User;
 use App\Services\TrainSearchService;
 use App\Support\FrontendPageAccessSettings;
@@ -50,9 +51,74 @@ class TrainHomepageAccessTest extends TestCase
         ]);
     }
 
+    public function test_train_passenger_can_open_profile_and_has_account_navigation(): void
+    {
+        Setting::query()->updateOrCreate(
+            ['key' => 'frontend_header_settings'],
+            ['value' => json_encode([
+                'logo_url' => 'uploads/event-logo.png',
+                'menu_items' => [['name' => 'EVENT', 'link' => '/events']],
+                'button_text' => 'Buy Tickets',
+            ])]
+        );
+        Setting::query()->updateOrCreate(
+            ['key' => 'frontend_footer_settings'],
+            ['value' => json_encode([
+                'upcoming_events_title' => 'Upcoming Events',
+                'upcoming_events' => [['name' => 'EventFlow launch', 'cta_text' => 'Get tickets']],
+                'copyright_text' => 'IGI Summit',
+            ])]
+        );
+
+        $passenger = $this->trainPassenger();
+        $this->actingAs($passenger);
+
+        $this->get(route('frontend.trains.home'))
+            ->assertOk()
+            ->assertSee('Find trains')
+            ->assertSee('My Bookings')
+            ->assertSee('Profile')
+            ->assertSee('Sign Out')
+            ->assertSee('action="' . route('logout') . '"', false)
+            ->assertSee('name="_token"', false);
+
+        $this->get(route('profile.password.edit'))
+            ->assertOk()
+            ->assertSee('SmartSeat')
+            ->assertSee('Profile')
+            ->assertSee('Sign Out')
+            ->assertDontSee('EventFlow')
+            ->assertDontSee('IGI Summit')
+            ->assertDontSee('Upcoming Events')
+            ->assertDontSee('Buy Tickets')
+            ->assertDontSee('event-logo.png');
+
+        $this->get(route('frontend.trains.bookings'))
+            ->assertOk()
+            ->assertSee('Find trains')
+            ->assertSee('My Bookings')
+            ->assertSee('Profile')
+            ->assertSee('Sign Out');
+
+        $this->post(route('logout'))->assertRedirect();
+        $this->assertGuest();
+    }
+
     public function test_guest_homepage_policy_is_consistent_across_all_entry_points(): void
     {
         $this->assertHomepagePolicy('guest');
+    }
+
+    public function test_guest_header_offers_train_sign_in_and_registration(): void
+    {
+        $this->get(route('frontend.trains.home'))
+            ->assertOk()
+            ->assertSee('Find trains')
+            ->assertSee('Sign In')
+            ->assertSee('Register')
+            ->assertDontSee('Profile')
+            ->assertDontSee('Sign Out')
+            ->assertDontSee('EventFlow');
     }
 
     public function test_user_homepage_policy_denies_access_without_logging_out_the_passenger(): void

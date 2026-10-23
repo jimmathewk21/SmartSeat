@@ -7,7 +7,6 @@
         $isAbsoluteIcon = str_starts_with($siteIcon, 'http://') || str_starts_with($siteIcon, 'https://') || str_starts_with($siteIcon, '//') || str_starts_with($siteIcon, '/');
         $siteIconHref = $isAbsoluteIcon ? $siteIcon : asset($siteIcon);
 
-        $footerSettings = \App\Support\FrontendFooterSettings::get();
         $maintenanceSettings = $maintenanceSettings ?? \App\Support\FrontendMaintenanceSettings::get();
 
         $resolveAssetHref = function (?string $path, string $fallback = ''): string {
@@ -26,7 +25,6 @@
         };
 
         $backgroundHref = $resolveAssetHref($maintenanceSettings['background_image'] ?? '', 'images/background/8.webp');
-        $logoHref = $resolveAssetHref($maintenanceSettings['logo_url'] ?? '', trim((string) ($footerSettings['logo_url'] ?? 'images/logo.webp')));
         $badgeIconRaw = trim((string) ($maintenanceSettings['badge_icon'] ?? ''));
         if ($badgeIconRaw !== '' && !str_starts_with($badgeIconRaw, 'http') && !str_starts_with($badgeIconRaw, '//') && !file_exists(public_path(ltrim($badgeIconRaw, '/')))) {
             $badgeIconRaw = '';
@@ -38,13 +36,6 @@
         $inquiryPrefix = trim((string) ($maintenanceSettings['inquiry_prefix'] ?? 'For Inquiries, please email -'));
         $inquiryEmail = trim((string) ($maintenanceSettings['inquiry_email'] ?? ''));
 
-        if ($inquiryEmail === '') {
-            $inquiryEmail = trim((string) ($footerSettings['contact_email'] ?? 'info@igisummit.com'));
-        }
-
-        if ($inquiryEmail === '') {
-            $inquiryEmail = 'info@igisummit.com';
-        }
     @endphp
     <title>{{ $frontendSeoTitle ?? $pageTitle }}</title>
     <link rel="icon" href="{{ $siteIconHref }}" type="image/gif" sizes="16x16">
@@ -117,11 +108,11 @@
             margin-bottom: 10px;
         }
 
-        .maintenance-logo {
-            max-width: 220px;
-            width: 100%;
-            max-height: 50px;
-            object-fit: contain;
+        .maintenance-brand {
+            color: #0f5137;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.04em;
         }
 
         .maintenance-message-panel {
@@ -253,7 +244,7 @@
         <section class="maintenance-shell" role="status" aria-live="polite">
             <article class="maintenance-card">
                 <div class="maintenance-logo-wrap">
-                    <img src="{{ $logoHref }}" alt="Site logo" class="maintenance-logo">
+                    <span class="maintenance-brand">SmartSeat</span>
                 </div>
 
                 <div class="maintenance-message-panel">
@@ -269,10 +260,12 @@
                 <p class="maintenance-thanks">{{ $thanksText }}</p>
             </article>
 
-            <div class="maintenance-contact">
-                {{ $inquiryPrefix }}
-                <a href="mailto:{{ $inquiryEmail }}">{{ $inquiryEmail }}</a>
-            </div>
+            @if($inquiryEmail !== '')
+                <div class="maintenance-contact">
+                    {{ $inquiryPrefix }}
+                    <a href="mailto:{{ $inquiryEmail }}">{{ $inquiryEmail }}</a>
+                </div>
+            @endif
         </section>
     </main>
 </body>
