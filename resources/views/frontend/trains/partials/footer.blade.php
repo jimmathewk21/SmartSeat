@@ -8,13 +8,15 @@
                     </span>
                     <span id="smartseat-footer-brand-title">SmartSeat</span>
                 </a>
-                <p class="smartseat-footer-tagline">Smarter journeys. Simpler bookings.</p>
-                <p class="smartseat-footer-description">A train search and ticket-booking system to help you find scheduled journeys, select seats, and manage your bookings.</p>
+                <p class="smartseat-footer-tagline">A good journey starts with a little curiosity.</p>
+                <p class="smartseat-footer-description">Find a train. Choose your seat. Keep the journey close.</p>
             </section>
 
             <nav class="smartseat-footer-column" aria-labelledby="smartseat-footer-booking-title">
                 <h2 id="smartseat-footer-booking-title">Booking</h2>
                 <a href="{{ route('frontend.trains.search') }}">Find Trains</a>
+                <a href="{{ route('frontend.faqs.index') }}">FAQs</a>
+                <a href="{{ route('frontend.contact.index') }}">Contact &amp; support</a>
                 @auth
                     <a href="{{ route('frontend.trains.bookings') }}">My Bookings</a>
                     <p>Manage eligible cancellations and waitlist requests from My Bookings.</p>

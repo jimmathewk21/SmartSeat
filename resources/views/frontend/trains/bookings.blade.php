@@ -5,16 +5,16 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/vendors.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
     <link href="{{ asset('css/train-search.css') }}" rel="stylesheet">
-    <style>.train-bookings-wrap{max-width:1000px;margin:0 auto;padding:28px 16px 48px}.booking-card{border:1px solid #e5e9f2;border-radius:12px;background:#fff;padding:20px;margin:16px 0}.seat-badge{display:inline-block;background:#f0f3f8;border-radius:6px;padding:5px 9px;margin:3px}@media(max-width:575px){.train-bookings-wrap{padding:20px 14px 36px}.booking-card{padding:15px}}</style>
 </head>
-<body style="background:#f6f8fc;color:#172033">
+<body class="train-search-page train-bookings-page">
 <div id="wrapper">
     @include('frontend.trains.partials.header')
     <main class="train-bookings-wrap">
-        <h1 class="mb-3">My train bookings</h1>
+        <div class="train-bookings-heading">
+            <div><p class="train-kicker">Your journeys, together</p><h1>My train bookings</h1><p>Seat confirmations, travel details and waitlist updates.</p></div>
+            <a class="train-primary-button" href="{{ route('frontend.trains.search') }}">Find another train <span aria-hidden="true">↗</span></a>
+        </div>
         @if(session('message')) <div class="alert alert-success">{{ session('message') }}</div> @endif
         @if($errors->any()) <div class="alert alert-danger">{{ $errors->first() }}</div> @endif
         @if($confirmedBooking)
@@ -99,11 +99,11 @@
                 @endif
             </article>
         @empty
-            <div class="booking-card">No train bookings yet. <a href="{{ route('frontend.trains.search') }}">Search trains</a>.</div>
+            <div class="booking-card"><strong>No train bookings yet.</strong><p>Your confirmed journeys will appear here, with passenger and seat details.</p><a class="train-secondary-button" href="{{ route('frontend.trains.search') }}">Search trains <span aria-hidden="true">↗</span></a></div>
         @endforelse
         {{ $bookings->links() }}
 
-        <h2 class="h4 mt-5">My waitlist requests</h2>
+        <h2 class="train-waitlist-heading">My waitlist requests</h2>
         @forelse($waitlistEntries as $entry)
             <article class="booking-card">
                 <div><strong>{{ $entry->trip->train->name }} ({{ $entry->trip->train->code }})</strong></div>
@@ -129,7 +129,7 @@
                 @endif
             </article>
         @empty
-            <div class="booking-card">No waitlist requests.</div>
+            <div class="booking-card"><strong>No waitlist requests.</strong><p>If your preferred seats are unavailable, you can join a waitlist from the search results.</p></div>
         @endforelse
         {{ $waitlistEntries->links() }}
     </main>

@@ -431,6 +431,8 @@ npm run test:e2e:ui
 
 - See [`docs/playwright-coverage-matrix.md`](docs/playwright-coverage-matrix.md) for the route-by-route coverage status and remaining gaps.
 
+The train-booking public interface, station autocomplete, and licensed local photography are documented in [SmartSeat public design](docs/smartseat-public-design.md).
+
 ### File Layout
 
 - `playwright.config.js`

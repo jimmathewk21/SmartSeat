@@ -6,11 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Search scheduled train journeys and find available seats with SmartSeat.">
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/vendors.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
     <link href="{{ asset('css/train-search.css') }}" rel="stylesheet">
 </head>
 <body class="train-search-page">
+<a class="train-skip-link" href="#train-search">Skip to train search</a>
 <div id="wrapper">
     @include('frontend.trains.partials.header')
 
@@ -18,30 +17,21 @@
         <section class="train-hero" aria-labelledby="train-page-title">
             <div class="train-container train-hero-grid">
                 <div class="train-hero-copy">
-                    <p class="train-eyebrow"><span class="train-eyebrow-mark" aria-hidden="true"></span> Your next journey starts here</p>
-                    <h1 id="train-page-title">Find your way<br><span>by train.</span></h1>
-                    <p class="train-hero-intro">Search scheduled journeys, compare departure times, and choose from seats currently available.</p>
-                    <div class="train-hero-points" aria-label="Booking details">
-                        <span><i aria-hidden="true">01</i> Pick your route</span>
-                        <span><i aria-hidden="true">02</i> Choose your seats</span>
-                    </div>
+                    <p class="train-eyebrow">THE JOURNEY IS PART OF THE STORY</p>
+                    <h1 id="train-page-title">Find your way.<br><em>See India anew.</em></h1>
+                    <p class="train-hero-intro">Early trains. Window-seat daydreams. A different India at every stop. Find a journey worth looking forward to.</p>
+                    <a class="train-hero-link" href="#train-search">Let's get you there <span aria-hidden="true">↘</span></a>
+                    <div class="train-hero-footnote"><span aria-hidden="true">01 —</span> YOUR NEXT CHAPTER, BY RAIL</div>
                 </div>
-
-                <div class="train-route-art" aria-hidden="true">
-                    <div class="route-art-sun"></div>
-                    <svg viewBox="0 0 520 300" role="presentation" focusable="false">
-                        <path class="route-art-line" d="M48 230 C135 221 132 106 235 129 S336 233 468 74" />
-                        <circle class="route-art-stop" cx="48" cy="230" r="10" />
-                        <circle class="route-art-stop route-art-stop-end" cx="468" cy="74" r="10" />
-                        <path class="route-art-train" d="M213 104h52a15 15 0 0 1 15 15v31h-82v-31a15 15 0 0 1 15-15Zm-8 56h78l10 14h-98l10-14Zm13-46h15v17h-15zm25 0h15v17h-15z" />
-                        <circle class="route-art-wheel" cx="222" cy="174" r="6" />
-                        <circle class="route-art-wheel" cx="270" cy="174" r="6" />
-                    </svg>
-                    <div class="route-art-caption"><span class="route-art-dot"></span> A better trip begins with a good plan</div>
-                </div>
+                <figure class="train-hero-photo">
+                    <img src="{{ asset('images/railway/railway-hero.webp') }}" alt="A Darjeeling Himalayan Railway train winding through lush greenery" width="1600" height="2240" fetchpriority="high" data-rail-image>
+                    <figcaption><span aria-hidden="true">◉</span> Darjeeling, West Bengal <small>A view worth slowing down for.</small></figcaption>
+                </figure>
+            </div>
+            <div class="train-container train-hero-search">
+                @include('frontend.trains.partials.search-panel')
             </div>
         </section>
-
         <div class="train-container train-content">
             @if(session('newsletter_message'))
                 <div class="train-alert train-alert-success" role="status">
@@ -75,78 +65,6 @@
                     </div>
                 </div>
             @endif
-
-            <section class="train-search-card" id="train-search" aria-labelledby="train-search-title">
-                <div class="train-section-heading">
-                    <div>
-                        <p class="train-kicker">Plan a trip</p>
-                        <h2 id="train-search-title">Where would you like to go?</h2>
-                    </div>
-                    <span class="train-search-step"><span aria-hidden="true">✦</span> Search scheduled services</span>
-                </div>
-
-                <form class="train-search-form" method="GET" action="{{ route('frontend.trains.search') }}" data-train-search-form>
-                    <div class="train-search-fields">
-                        <div class="train-route-fields">
-                        <div class="train-field">
-                            <label for="from_station_id">From</label>
-                            <div class="train-control-wrap">
-                                <span class="train-field-icon" aria-hidden="true">
-                                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6.5"></circle><circle cx="12" cy="12" r="2"></circle></svg>
-                                </span>
-                                <select id="from_station_id" name="from_station_id" required aria-describedby="from-station-hint">
-                                    <option value="">Choose origin station</option>
-                                    @foreach($stations as $station)
-                                        <option value="{{ $station->id }}" @selected((string) request('from_station_id') === (string) $station->id)>
-                                            {{ $station->name }}@if($station->city) · {{ $station->city }}@endif ({{ $station->code }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <span class="train-sr-only" id="from-station-hint">Choose the station where your journey begins.</span>
-                        </div>
-
-                        <button class="train-swap-button" type="button" data-swap-stations aria-label="Swap origin and destination" title="Swap stations">
-                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h12m0 0-3-3m3 3-3 3M17 17H5m0 0 3 3m-3-3 3-3"></path></svg>
-                        </button>
-
-                        <div class="train-field">
-                            <label for="to_station_id">To</label>
-                            <div class="train-control-wrap">
-                                <span class="train-field-icon train-field-icon-destination" aria-hidden="true">
-                                    <svg viewBox="0 0 24 24"><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z"></path><circle cx="12" cy="10" r="2.3"></circle></svg>
-                                </span>
-                                <select id="to_station_id" name="to_station_id" required aria-describedby="to-station-hint">
-                                    <option value="">Choose destination station</option>
-                                    @foreach($stations as $station)
-                                        <option value="{{ $station->id }}" @selected((string) request('to_station_id') === (string) $station->id)>
-                                            {{ $station->name }}@if($station->city) · {{ $station->city }}@endif ({{ $station->code }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <span class="train-sr-only" id="to-station-hint">Choose the station where your journey ends.</span>
-                        </div>
-                        </div>
-
-                        <div class="train-field train-date-field">
-                            <label for="date">Journey date</label>
-                            <div class="train-control-wrap">
-                                <span class="train-field-icon" aria-hidden="true">
-                                    <svg viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="14" rx="2"></rect><path d="M8 4v4m8-4v4M4 10h16"></path></svg>
-                                </span>
-                                <input id="date" name="date" type="date" min="{{ now()->toDateString() }}" value="{{ request('date') }}" required>
-                            </div>
-                        </div>
-
-                        <button class="train-submit-button" type="submit" data-search-submit>
-                            <span class="train-submit-label">Search trains</span>
-                            <span class="train-submit-loading" aria-hidden="true">Searching…</span>
-                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13m-5-5 5 5-5 5"></path></svg>
-                        </button>
-                    </div>
-                </form>
-            </section>
 
             @if($searched)
                 @php
@@ -263,13 +181,13 @@
                                                             </div>
                                                             <div class="train-passenger-rows" data-passenger-rows>
                                                                 <div class="train-passenger-row">
-                                                                    <label class="train-field">Passenger name <span aria-hidden="true">*</span>
+                                                                    <label class="train-field"><span>Passenger name <em aria-hidden="true">*</em></span>
                                                                         <input type="text" name="passengers[0][name]" maxlength="255" autocomplete="name" placeholder="Full name" required>
                                                                     </label>
-                                                                    <label class="train-field">Age <small>Optional</small>
+                                                                    <label class="train-field"><span>Age <small>Optional</small></span>
                                                                         <input type="number" name="passengers[0][age]" min="0" max="120" inputmode="numeric" placeholder="Age">
                                                                     </label>
-                                                                    <label class="train-field">Gender <small>Optional</small>
+                                                                    <label class="train-field"><span>Gender <small>Optional</small></span>
                                                                         <select name="passengers[0][gender]">
                                                                             <option value="">Prefer not to say</option>
                                                                             <option value="female">Female</option>
@@ -304,13 +222,13 @@
                                                         <input type="hidden" name="date" value="{{ request('date') }}">
                                                         <div class="train-passenger-rows" data-passenger-rows>
                                                             <div class="train-passenger-row">
-                                                                <label class="train-field">Passenger name <span aria-hidden="true">*</span>
+                                                                <label class="train-field"><span>Passenger name <em aria-hidden="true">*</em></span>
                                                                     <input type="text" name="passengers[0][name]" maxlength="255" autocomplete="name" placeholder="Full name" required>
                                                                 </label>
-                                                                <label class="train-field">Age <small>Optional</small>
+                                                                <label class="train-field"><span>Age <small>Optional</small></span>
                                                                     <input type="number" name="passengers[0][age]" min="0" max="120" inputmode="numeric" placeholder="Age">
                                                                 </label>
-                                                                <label class="train-field">Gender <small>Optional</small>
+                                                                <label class="train-field"><span>Gender <small>Optional</small></span>
                                                                     <select name="passengers[0][gender]">
                                                                         <option value="">Prefer not to say</option>
                                                                         <option value="female">Female</option>
@@ -340,10 +258,7 @@
                     @endif
                 </section>
             @else
-                <section class="train-before-search" aria-label="Search guidance">
-                    <div class="before-search-icon" aria-hidden="true">↗</div>
-                    <div><strong>Your route, your schedule.</strong><p>Choose two stations and a date to see scheduled journeys and current seat availability.</p></div>
-                </section>
+                @include('frontend.trains.partials.explore')
             @endif
         </div>
     </main>
