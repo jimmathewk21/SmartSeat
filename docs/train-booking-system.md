@@ -32,7 +32,7 @@ Both train demo seeders are explicit commands and check the effective connection
 
 ## Search frontend
 
-The larger deterministic synthetic dataset is a separate opt-in command, described in [Railway demonstration dataset](railway-demonstration-dataset.md). It does not alter either existing train seeder and never runs automatically. Step 27A provides code and offline unit verification only; database installation requires Step 27B approval.
+The larger deterministic synthetic dataset is a separate opt-in command, described in [Railway demonstration dataset](railway-demonstration-dataset.md). It does not alter either existing train seeder and never runs automatically. Step 27C hardens telemetry-free preview, verified write-connection routing and credential cleanup; installation still requires separate authorization for the isolated `smartseat_demo` database.
 
 The public search is served by `/`, `/trains` (`frontend.trains.search`), and `/index.html`, through `FrontendTrainController::index()`. The controller renders `resources/views/frontend/trains/search.blade.php`; searches and results share the same page. The view uses dedicated train header/footer partials, responsive styling in `public/css/train-search.css`, and vanilla JavaScript in `public/js/train-search.js`. The station picker enhances the existing station options without changing query parameters or adding endpoints. See [public interface design and photography credits](smartseat-public-design.md) for the layout, accessibility, and asset-maintenance details.
 

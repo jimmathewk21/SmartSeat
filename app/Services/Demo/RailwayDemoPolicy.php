@@ -26,6 +26,22 @@ class RailwayDemoPolicy
         }
     }
 
+    public static function assertSingleConnection(array $configuration): void
+    {
+        // Reject even empty split definitions: no replica, failover or URL override is supported.
+        if (($configuration['driver'] ?? null) !== 'mysql'
+            || ($configuration['database'] ?? null) !== self::DATABASE
+            || array_key_exists('read', $configuration) || array_key_exists('write', $configuration)
+            || ! empty($configuration['url']) || ! empty($configuration['sticky'])
+            || ! empty($configuration['prefix'])
+            || ! is_string($configuration['host'] ?? null) || $configuration['host'] === ''
+            || ! is_array($configuration['options'] ?? [])
+            || ! empty(($configuration['options'] ?? [])[\PDO::ATTR_PERSISTENT])
+            || (defined('PDO::MYSQL_ATTR_INIT_COMMAND') && array_key_exists(constant('PDO::MYSQL_ATTR_INIT_COMMAND'), $configuration['options'] ?? []))) {
+            throw new RuntimeException('Installation requires one explicit, non-persistent MySQL connection to smartseat_demo, without URL overrides, split routing or table prefixes.');
+        }
+    }
+
     public static function alreadyInstalled(?string $marker, string $fingerprint): bool
     {
         if ($marker === null) {

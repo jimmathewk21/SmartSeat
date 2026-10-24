@@ -1,14 +1,14 @@
 # Development-only synthetic credential reference
 
-Step 27A creates implementation and documentation only. **No database accounts, passwords or credential reference have been installed.** Unit tests use temporary in-memory business-data arrays. No administrator credentials are requested, copied, replaced, or included in this feature.
+Step 27C hardens implementation without installing data. **No database accounts or application credential reference have been installed.** Offline tests use in-memory arrays and isolated temporary directories which are cleaned afterward. No administrator credentials are requested, copied, replaced, or included in this feature.
 
-After an explicitly approved Step 27B installation, the installer exclusively creates:
+Only during a separately authorized installation, after target/schema/role/namespace checks, the installer exclusively creates:
 
 ```text
 storage/app/private/smartseat-demo/S27-v1/credentials.json
 ```
 
-This is outside `public/` and `storage/app/public/`. The existing `storage/app/.gitignore` excludes it. It must never be linked from public/passenger pages, attached to a commit, exposed through a route, or uploaded with public assets. Unix file permissions are requested as `0600` and directory permissions as `0700`; on Windows, verify the directory's ACL before installation because PHP `chmod` does not establish a Windows user-only ACL.
+This is outside `public/` and `storage/app/public/`. The existing `storage/app/.gitignore` excludes it. It must never be linked from public/passenger pages, attached to a commit, exposed through a route, or uploaded with public assets. A restrictive creation umask, exclusive file creation and file locking are used, with Unix file permissions `0600` and new directory permissions `0700`. Existing directories are not chmodded. On Windows, verify the private directory's ACL before installation because PHP `chmod` does not establish a Windows user-only ACL. Use a trusted local directory; hostile filesystem replacement cannot be made atomic with a SQL commit.
 
 The file is the separate local credential reference for these fictional accounts:
 
@@ -23,6 +23,8 @@ Query-builder insertion avoids user-model observers, registration mail, verifica
 
 An administrator must review each synthetic owner through the existing Admin → Users workflow and explicitly approve Train Owner access. Role membership, the existing owner-role permissions, approval and assigned trains remain necessary. Passengers do not receive the Train Owner or Admin role; owners are not automatically event-approved.
 
-Reruns do not overwrite the credential reference, change existing passwords, or repair an interrupted installation. If installation fails after creating the file, retain it and review transaction/marker state before any retry. If the file is missing after a successful installation, use a separately authorized reset for the synthetic accounts; the generator cannot reconstruct random passwords. Do not reset the existing administrator.
+On a caught installation failure, the reference owned by that attempt is truncated/flushed, then removed only if its filesystem identity still matches. A pre-existing or replaced path is never deleted. Short writes, failed flushes, permission errors and cleanup failures cannot report success; errors omit password/hash input. The reference is retained only after the transaction callback has committed. Cleanup failure reports an explicit manual-review error, even if the remaining artifact is already empty.
 
-See [dataset design, exact counts, safety gates and later commands](railway-demonstration-dataset.md). The installer and preview must not be invoked during Step 27A.
+Reruns do not overwrite references, change existing passwords, or repair interrupted installations. A forced kill/power failure can bypass cleanup, and a lost commit acknowledgement can leave committed accounts without a usable reference. Review transaction/marker state before any retry. If the file is missing after a successful installation, use a separately authorized reset for the synthetic accounts; the generator cannot reconstruct random passwords. Do not reset the existing administrator.
+
+See [dataset design, exact counts, safety gates and later commands](railway-demonstration-dataset.md). Preview is offline; dataset installation has not been authorized or executed.

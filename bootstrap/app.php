@@ -15,6 +15,16 @@ $app = new Illuminate\Foundation\Application(
     $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
 );
 
+// Runs after configuration (including cached configuration), before package providers.
+$app->beforeBootstrapping(
+    Illuminate\Foundation\Bootstrap\RegisterProviders::class,
+    function ($app): void {
+        if ($app->runningInConsole()) {
+            App\Services\Demo\RailwayDemoConsoleBootstrap::configure($app, $_SERVER['argv'] ?? []);
+        }
+    }
+);
+
 /*
 |--------------------------------------------------------------------------
 | Bind Important Interfaces

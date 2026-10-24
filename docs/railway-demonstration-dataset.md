@@ -1,6 +1,6 @@
-# Synthetic Indian railway demonstration dataset (Step 27A)
+# Synthetic Indian railway demonstration dataset
 
-**Implementation only. Do not invoke the preview or installer until Step 27B is approved.** Nothing in this feature runs from `DatabaseSeeder`, a migration, a scheduler, or an HTTP route. Existing train demo seeders and their historical-booking blockers are unchanged.
+**Step 27C: hardened implementation and offline verification only. No dataset has been installed.** Installation needs separate explicit authorization. Nothing in this feature runs from `DatabaseSeeder`, a migration, a scheduler, or an HTTP route. Existing train demo seeders and their historical-booking blockers are unchanged.
 
 ## Dataset definition
 
@@ -40,7 +40,9 @@ Historical snapshots are installed directly into **new, isolated** records becau
 
 ## Installation safeguards
 
-Installation is restricted to an already provisioned **separate MySQL database named `smartseat_demo`**, with `APP_ENV=local` and explicit `--install --approve-target=smartseat_demo`. `smartseat_dev`, `smartseat_train_test`, production environments, other drivers, and other database names are rejected **before connecting**. The actual `SELECT DATABASE()` result must then match `smartseat_demo` before schema/data inspection. No database is created and no migration or seeder is invoked.
+Installation is restricted to an already provisioned **separate MySQL database named `smartseat_demo`**, with `APP_ENV=local` and explicit `--install --approve-target=smartseat_demo`. `smartseat_dev`, `smartseat_train_test`, production environments, other drivers, and other configured database names are rejected **before connecting**. URL overrides, read/write split keys (even empty or same-target definitions), host arrays, sticky routing, persistent connections, table prefixes and PDO initialization commands are unsupported and rejected. Both the raw configuration and the resolved Laravel connection configuration are checked.
+
+The actual `SELECT DATABASE()` result is verified on the **write PDO**, not a replica. An existing read PDO or transaction is rejected. A private Laravel connection wrapper then pins target verification, advisory-lock acquisition/release, schema reads and the complete insert transaction to that same PDO. It has no read PDO, query event dispatcher or reconnect callback; a lost session fails rather than reconnecting to an unverified target. No database is created and no migration or seeder is invoked.
 
 The target must already contain the retained application/train migrations, one active non-Admin `User` role, and one active non-Admin `Train Owner` role with both existing owner-management permissions. The generator does not create, restore, grant, or modify shared roles/permissions, and never assigns reserved Admin role ID 1. All new passenger participants have `train_access_enabled=true`, `is_approved=false`, and `users.verification_status=false`. All five owners have train access disabled and `train_owner_approved_at=null`; each receives eight newly created trains, but cannot enter the owner panel until an administrator explicitly approves them through Admin → Users. Existing administrator accounts are untouched. The generator does not create an administrator if one is missing.
 
@@ -48,34 +50,36 @@ Preflight requires InnoDB, strict SQL mode, enabled foreign-key/CHECK enforcemen
 
 Any pre-existing `S27-` catalog/booking key or synthetic account address without a matching installation marker aborts installation. The marker is committed with the new records. A rerun with the identical fingerprint returns a no-op: no duplicate rows, password rotation, restoration of changed permissions, or reversal of later application activity. A different seed/date/version is rejected against an installed marker. There is deliberately no reset, delete, refresh, force, or partial-repair mode.
 
-## Later commands — examples only, not executed in Step 27A
+## Preview and later installation
 
-After explicit Step 27B approval, review the source, target schema and role configuration. Keep this dedicated demo database offline from interactive users during installation. Schema provisioning, administrator provisioning, backups, and any migrations require their own authorization; the command does none of them.
+Step 27D preparation may review the source, target schema, role configuration and filesystem ACLs. Dataset installation still needs explicit authorization. Keep this dedicated demo database offline from interactive users during installation. Schema provisioning, administrator provisioning, backups, and any migrations require their own authorization; the command does none of them.
 
 Offline preview (PowerShell; process-only variables, no `.env` edit):
 
 ```powershell
 $env:APP_ENV = 'testing'
 $env:DB_CONNECTION = 'offline_for_preview'
-$env:TELESCOPE_ENABLED = 'false'
 php artisan smartseat:railway-demo --as-of=2026-10-24 --seed=27001
 ```
 
-Preview shows table sizes, outcomes and the fingerprint without generating credentials or opening a database connection. Diagnostic recording is disabled in this invocation so application instrumentation cannot persist command telemetry.
+Preview shows table sizes, outcomes and the fingerprint without generating credentials or opening a database connection. `bootstrap/app.php` runs `RailwayDemoConsoleBootstrap` after loading configuration (including cached configuration), before registering application/package providers. Only a fresh CLI invocation of the full `smartseat:railway-demo` name overrides Telescope/Pulse to disabled and cache/rate-limiter stores to in-memory arrays. This applies to preview and installation, including rejected installation attempts; unrelated commands and HTTP monitoring keep their normal configuration. No environment/configuration file is changed. The memory cache also avoids the route provider resolving a database cache during console startup.
 
-Installation example, **only after Step 27B approval**:
+Use the full command name as shown; do not use command abbreviations, `Artisan::call`, HTTP invocation or a long-lived worker. The command refuses to proceed if telemetry flags are still enabled, but cannot undo provider activity in an already bootstrapped process. Prefer global options after the command (or `--env=local` with `=`). Future providers that eagerly connect to a database or other telemetry integrations need a separate review; this hook specifically covers the current Telescope/Pulse integrations and rate-limiter bootstrap.
+
+Installation example, **only after separate explicit installation approval**:
 
 ```powershell
 $env:APP_ENV = 'local'
 $env:DB_CONNECTION = 'mysql'
 $env:DB_DATABASE = 'smartseat_demo'
-$env:TELESCOPE_ENABLED = 'false'
 php artisan smartseat:railway-demo --as-of=2026-10-24 --seed=27001 --install --approve-target=smartseat_demo
 ```
 
 For a first installation, replace the example date with the current date in Asia/Kolkata. The date is checked again before committing. For an identical rerun, retain the original date and seed; an installed snapshot is not silently moved forward with the clock.
 
-Credentials are documented separately in [development-only credential handling](demo-credentials.md). On any installation error, retain any credential file, inspect whether the transaction committed and whether the marker exists, and review namespace rows. Do not delete history, rotate passwords automatically, remove the marker, or bypass preflight. Filesystem creation and SQL commit are not one atomic resource; an interrupted install can leave a private credential reference even if SQL rolled back. Existing records and the file are preserved for review. A lost reference cannot be recovered by rerunning the generator.
+Credentials are documented separately in [development-only credential handling](demo-credentials.md). A caught write/hash/SQL/commit error clears and removes only the reference exclusively created by that attempt. Existing references are never overwritten or removed. Cleanup failure is an explicit installation error, and is not masked by a later lock-release error. A matching installed marker returns a no-op without opening or changing a credential reference.
+
+Filesystem creation and SQL commit are not atomic together. Forced process termination, power loss, inaccessible storage, or an ambiguous commit acknowledgement still require manual review of the marker, namespace and private reference before retrying. A lock-release failure after a successful commit reports that the dataset may already be committed, retaining its reference. Lost credentials cannot be reconstructed by rerunning the generator; any synthetic-account reset requires separate authorization. Never delete history or bypass preflight to recover.
 
 ## Algorithm features and limitations
 
@@ -93,15 +97,14 @@ Credentials are documented separately in [development-only credential handling](
 
 These are small, deliberately simplified corridor graphs and designed outcomes. Transfer/network-routing research needs a richer connected topology. Predictive results on this synthetic sample are not evidence of real passenger behavior. The historical/current queue views do not provide complete event-time labels once later application activity changes records.
 
-## Verification performed in Step 27A
+## Offline verification
 
-Only PHP lint, static checks against migration source, pure unit tests and `git diff --check` are authorized. Unit tests exercise in-memory planning/policy/validation, never the Artisan generator, installer, schema, filesystem credentials or a database. Run them with:
+Step 27C permits PHP lint, static checks against migration source, offline unit/subprocess tests and `git diff --check`. Tests exercise in-memory planning/policy/validation, mocked PDOs and private random temporary directories. A fresh Artisan subprocess runs **preview only** with an invalid default connection, MySQL port 1, telemetry initially enabled and a database-backed cache configuration. No installer, database-backed test, migration or seeder is executed. Run them with:
 
 ```powershell
 $env:APP_ENV = 'testing'
 $env:DB_CONNECTION = 'offline_for_unit_tests'
-$env:TELESCOPE_ENABLED = 'false'
 php vendor/phpunit/phpunit/phpunit tests/Unit/Demo
 ```
 
-Live schema compatibility, installation rollback, filesystem permissions, actual row counts, account login, owner approval, search and cancellation/promotion integration remain Step 27B checks. No database-backed generator test has been run in Step 27A.
+Live schema compatibility, actual MySQL rollback/commit behavior, deployment filesystem permissions, installed row counts, account login, owner approval, search and cancellation/promotion integration remain unverified. Offline tests simulate operation failure and credential cleanup; they do not prove a real SQL rollback. No database-backed generator installation test has been run.

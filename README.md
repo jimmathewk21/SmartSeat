@@ -433,7 +433,7 @@ npm run test:e2e:ui
 
 The train-booking public interface, station autocomplete, and licensed local photography are documented in [SmartSeat public design](docs/smartseat-public-design.md).
 
-The separate, implementation-only synthetic railway dataset is documented in [Railway demonstration dataset](docs/railway-demonstration-dataset.md). It is not registered with `DatabaseSeeder`; installation requires separate approval and an isolated `smartseat_demo` database.
+The separate synthetic railway generator is documented in [Railway demonstration dataset](docs/railway-demonstration-dataset.md). Its preview disables Telescope/Pulse before provider registration and uses process-local memory caching. Installation requires separate approval, a verified single write connection to local `smartseat_demo`, and private credential-file safeguards. It is not registered with `DatabaseSeeder` and has not been installed.
 
 ### File Layout
 

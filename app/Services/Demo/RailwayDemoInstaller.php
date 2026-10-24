@@ -6,12 +6,14 @@ use Carbon\CarbonImmutable;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use RuntimeException;
+use Throwable;
 
 /** Explicit, insert-only installer. Never called by DatabaseSeeder or the planner. */
 class RailwayDemoInstaller
 {
+    public function __construct(private RailwayDemoCredentials $credentials) {}
+
     public function install(array $plan, string $acknowledgement): array
     {
         RailwayDemoPolicy::assertConfiguration(
@@ -19,20 +21,21 @@ class RailwayDemoInstaller
             (string) Config::get('database.connections.mysql.driver'),
             (string) Config::get('database.connections.mysql.database'), $acknowledgement,
         );
+        RailwayDemoPolicy::assertSingleConnection((array) Config::get('database.connections.mysql'));
         (new RailwayDemoValidator)->validate($plan);
         if ($plan['timezone'] !== Config::get('app.timezone')) {
             throw new RuntimeException('Plan timezone must match the application timezone.');
         }
-        $connection = DB::connection('mysql');
-        RailwayDemoPolicy::assertConnectedDatabase((string) $connection->selectOne('SELECT DATABASE() AS db')->db);
-        if ((int) $connection->selectOne("SELECT GET_LOCK('smartseat_demo:S27-v1', 10) AS acquired")->acquired !== 1) {
+        $connection = RailwayDemoConnection::verifiedWriter(DB::connection('mysql'));
+        if ((int) $connection->selectOne("SELECT GET_LOCK('smartseat_demo:S27-v1', 10) AS acquired", [], false)->acquired !== 1) {
             throw new RuntimeException('Another demo installation holds the lock.');
         }
+        $failure = null;
         try {
             $this->assertSchema($connection);
 
             // No transaction retries: credential-file creation is an external side effect.
-            return $connection->transaction(function () use ($connection, $plan): array {
+            return $this->credentials->withCleanup(fn () => $connection->transaction(function () use ($connection, $plan): array {
                 $fingerprint = RailwayDemoPlan::fingerprint($plan);
                 $marker = $connection->table('settings')->where('key', RailwayDemoPolicy::MARKER)->lockForUpdate()->first();
                 if ($marker && $marker->deleted_at !== null) {
@@ -46,7 +49,7 @@ class RailwayDemoInstaller
                 }
                 $this->assertUnusedNamespace($connection);
                 $ids = ['roles' => $this->roles($connection)];
-                [$hashes, $credentials] = $this->credentials($plan);
+                [$hashes, $credentials] = $this->credentials->create($plan);
                 foreach (array_keys(RailwayDemoPlan::COUNTS) as $table) {
                     foreach ($plan['tables'][$table] as $key => $attributes) {
                         foreach ($attributes as $column => $value) {
@@ -86,9 +89,21 @@ class RailwayDemoInstaller
                 ]);
 
                 return ['installed' => true, 'credentials' => $credentials];
-            }, 1);
+            }, 1));
+        } catch (Throwable $exception) {
+            $failure = $exception;
+            throw $exception;
         } finally {
-            $connection->selectOne("SELECT RELEASE_LOCK('smartseat_demo:S27-v1') AS released");
+            try {
+                if ((int) $connection->selectOne("SELECT RELEASE_LOCK('smartseat_demo:S27-v1') AS released", [], false)->released !== 1) {
+                    throw new RuntimeException('Advisory lock was not released.');
+                }
+            } catch (Throwable) {
+                // Preserve a primary failure, especially an explicit credential-cleanup failure.
+                if ($failure === null) {
+                    throw new RuntimeException('Advisory lock release failed after installation returned. The dataset may be committed; review the marker and private reference before retrying.');
+                }
+            }
         }
     }
 
@@ -122,48 +137,6 @@ class RailwayDemoInstaller
         }
 
         return $ids;
-    }
-
-    private function credentials(array $plan): array
-    {
-        $directory = storage_path('app/private/smartseat-demo/S27-v1');
-        $path = $directory.'/credentials.json';
-        if (file_exists($path)) {
-            throw new RuntimeException('A private credential reference already exists. Review a possible interrupted installation; passwords will not be overwritten.');
-        }
-        if (! is_dir($directory) && ! mkdir($directory, 0700, true)) {
-            throw new RuntimeException('Cannot create private credential directory.');
-        }
-        $accounts = [];
-        $hashes = [];
-        foreach ($plan['tables']['users'] as $email => $user) {
-            $password = rtrim(strtr(base64_encode(random_bytes(24)), '+/', '-_'), '=');
-            $hashes[$email] = Hash::make($password);
-            $owner = str_starts_with($email, 's27.owner.');
-            $accounts[] = [
-                'name' => $user['name'], 'email' => $email, 'password' => $password,
-                'login_path' => $owner ? '/internal/rail-owner/entry' : '/trains/sign-in',
-                'owner_approval' => $owner ? 'pending — administrator review required' : null,
-            ];
-        }
-        $payload = json_encode([
-            'notice' => 'DEVELOPMENT-ONLY SYNTHETIC ACCOUNTS. Never publish this file.',
-            'database' => RailwayDemoPolicy::DATABASE, 'fingerprint' => RailwayDemoPlan::fingerprint($plan), 'accounts' => $accounts,
-        ], JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-        $file = fopen($path, 'x');
-        if ($file === false) {
-            throw new RuntimeException('Cannot exclusively create the private credential reference.');
-        }
-        try {
-            if (! chmod($path, 0600) || fwrite($file, $payload) !== strlen($payload) || ! fflush($file)) {
-                throw new RuntimeException('Private credential write failed. Review the retained file before retrying.');
-            }
-        } finally {
-            fclose($file);
-        }
-
-        // On any later SQL failure this reference is retained for manual recovery, never rotated or deleted.
-        return [$hashes, $path];
     }
 
     private function assertSchema(Connection $connection): void

@@ -37,6 +37,9 @@ class GenerateRailwayDemoCommand extends Command
     public function handle(RailwayDemoPlan $planner, RailwayDemoValidator $validator, RailwayDemoInstaller $installer): int
     {
         try {
+            if (Config::get('telescope.enabled') !== false || Config::get('pulse.enabled') !== false) {
+                throw new InvalidArgumentException('Invoke the full smartseat:railway-demo command in a fresh Artisan process; telemetry must be disabled before providers initialize.');
+            }
             $seed = filter_var($this->option('seed'), FILTER_VALIDATE_INT, ['options' => ['min_range' => 0, 'max_range' => 2147483647]]);
             if ($seed === false) {
                 throw new InvalidArgumentException('Seed must be an integer from 0 to 2147483647.');
@@ -61,7 +64,7 @@ class GenerateRailwayDemoCommand extends Command
 
             return self::SUCCESS;
         } catch (QueryException) {
-            $this->error('Installation database operation failed. Preserve any private credential reference and inspect the transaction outcome before retrying.');
+            $this->error('Installation database operation failed. Credential cleanup was attempted; review transaction/marker state before retrying.');
 
             return self::FAILURE;
         } catch (Throwable $exception) {
