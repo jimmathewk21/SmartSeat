@@ -433,6 +433,8 @@ npm run test:e2e:ui
 
 The train-booking public interface, station autocomplete, and licensed local photography are documented in [SmartSeat public design](docs/smartseat-public-design.md).
 
+The separate, implementation-only synthetic railway dataset is documented in [Railway demonstration dataset](docs/railway-demonstration-dataset.md). It is not registered with `DatabaseSeeder`; installation requires separate approval and an isolated `smartseat_demo` database.
+
 ### File Layout
 
 - `playwright.config.js`
