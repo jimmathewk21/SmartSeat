@@ -244,9 +244,3 @@ work, not additional installation requirements.
 
 Setup conventions follow the [Laravel 12 installation](https://laravel.com/docs/12.x/installation)
 and [database documentation](https://laravel.com/docs/12.x/database).
-
-## License
-
-Application code follows the existing MIT declaration; see [LICENSE](LICENSE).
-Dependencies retain their own copyright and license notices. The source review
-inspected no previous project repositories and does not independently certify ownership.
