@@ -5,7 +5,8 @@ includes working authentication, passenger and administrator roles, railway
 catalogue management, train search, group bookings, cancellation and waitlists.
 This repository is a source-code skeleton with implemented features, migrations,
 tests and original Blade/CSS assets. It contains no operating railway dataset,
-default accounts, sample bookings or pre-trained prediction model.
+default accounts, sample bookings or pre-trained prediction model. Please do add
+your own data to understand the project better.
 
 ## Railway booking features
 
